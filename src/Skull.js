@@ -1,7 +1,7 @@
 (function(root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD
-        define(['underscore', 'Backbone', 'jquery', 'exports'], function(_, Backbone, $, exports) {
+        define(['_', 'backbone', 'jquery', 'exports'], function(_, Backbone, $, exports) {
             // Export global even in AMD case in case this script is loaded with
             // others that may still expect a global Skull.
             root.Skull = factory(root, exports, _, Backbone, $);
@@ -22,7 +22,7 @@
     var previousSkull = root.Skull;
 
     Skull.noConflict = function () {
-        root.Chitin = previousSkull;
+        root.Skull = previousSkull;
         return this;
     };
 
@@ -30,19 +30,42 @@
     // Utility classes
 
     /**
-     * @class ResourceRegistry
-     * Simple implementation of Registry pattern
-     * @constructor
+     * Abstract class that can be extended in Backbone way.
+     * @class Skull.Abstract
      */
-    var ResourceRegistry = Skull.ResourceRegistry = function () {
-        /** @private */
-        this._storage = {};
-
-        /** @private */
-        this._fabric = {};
+    var Abstract = Skull.Abstract = function () {
+        this.initialize.apply(this, arguments);
     };
 
-    ResourceRegistry.prototype = {
+    Abstract.prototype = {
+        initialize: function () {}
+    };
+
+    Abstract.extend = Backbone.Model.extend;
+
+    /**
+     * Class for creating object which can listen and trigger events.
+     * Useful when creating buses and so on.
+     * @class Skull.Observable
+     * @extends Skull.Abstract
+     */
+    var Observable = Skull.Observable = Abstract.extend(Backbone.Events);
+
+    /**
+     * Simple implementation of Registry pattern
+     * @class Skull.ResourceRegistry
+     * @extends Skull.Abstract
+     * @constructor
+     */
+    var ResourceRegistry = Skull.Abstract.extend({
+        initialize: function () {
+            /** @private */
+            this._storage = {};
+
+            /** @private */
+            this._fabric = {};
+        },
+
         /**
          * Registers object or fabric by given <code>key<code>
          * @param {String} key
@@ -93,14 +116,14 @@
                 return this._storage[key]
             }
         }
-    };
+    });
 
     /**
-     * Iterates over context.$$registry, acquiring dependencies from it via context.registry.acquire
+     * Iterates over context.__registry__, acquiring dependencies from it via context.registry.acquire
      * @type {Function}
      */
     var processRegistry = Skull.processRegistry = function (context) {
-        var items = _.result(context, '$$registry'),
+        var items = _.result(context, '__registry__'),
             registry = context.registry,
             requirement;
 
@@ -117,14 +140,12 @@
      * Backbone.sync OO-style
      * Can emit auhorized requests, when provided with getToken function and authHeaderName
      */
-    var Syncer = Skull.Syncer = function (options) {
-        this.initialize(options);
-    };
-
-    Syncer.prototype = {
-
-        // Map from CRUD to HTTP for our default syncer implementation.
-        methodMap: {
+    var Syncer = Skull.Syncer = Skull.Abstract.extend({
+        /**
+         * Map from CRUD to HTTP for our default syncer implementation.
+         * @private
+         */
+        _methodMap: {
             'create': 'POST',
             'update': 'PUT',
             'delete': 'DELETE',
@@ -132,7 +153,10 @@
             'patch': 'PATCH'
         },
 
-        urlError: function () {
+        /**
+         * @private
+         */
+        _urlError: function () {
             throw new Error('A "url" property or function must be specified');
         },
 
@@ -145,12 +169,12 @@
         },
 
         sync: function(method, model, options) {
-            var type = this.methodMap[method];
+            var type = this._methodMap[method];
 
             // Default options, unless specified.
             _.defaults(options || (options = {}), {
-                emulateHTTP: Backbone.emulateHTTP,
-                emulateJSON: Backbone.emulateJSON
+                emulateHTTP: this.emulateHTTP,
+                emulateJSON: this.emulateJSON
             });
 
             // Default JSON-request options.
@@ -158,7 +182,7 @@
 
             // Ensure that we have a URL.
             if (!options.url) {
-                params.url = _.result(model, 'url') || this.urlError();
+                params.url = _.result(model, 'url') || this._urlError();
             }
 
             // Ensure that we have the appropriate request data.
@@ -190,7 +214,7 @@
                 params.processData = false;
             }
 
-            params = this.authorize(params);
+            params = this._authorize(params);
 
             var success = options.success;
             options.success = function(resp, status, xhr) {
@@ -209,8 +233,13 @@
             return xhr;
         },
 
-        // Add authorization headers (if possible)
-        authorize: function (params) {
+        /**
+         * Augments request params with authorization header
+         * @param {Object} params
+         * @returns {Object}
+         * @private
+         */
+        _authorize: function (params) {
             if (this.getToken && this.getToken() && this.authHeaderName) {
                 params.headers[this.authHeaderName] = this.getToken();
             }
@@ -218,16 +247,20 @@
             return params;
         },
 
+        /**
+         * Performs ajax request
+         * @returns {jQuery.Deferred}
+         */
         ajax: function () {
             return $.ajax.apply($, arguments);
         }
-    };
+    });
 
     /**
      * @class Model
      */
     var Model = Skull.Model = Backbone.Model.extend({
-        $$registry: {
+        __registry__: {
             syncer: 'syncer'
         },
 
@@ -321,8 +354,8 @@
         }
     });
 
-    var Collection = Skull.Collection.extend({
-        $$registry: {
+    var Collection = Skull.Collection = Backbone.Collection.extend({
+        __registry__: {
             syncer: 'syncer'
         },
 
@@ -396,7 +429,7 @@
     });
 
     var View = Skull.View = Backbone.View.extend({
-        $$registry: {
+        __registry__: {
             templater: 'templater'
         },
 
@@ -488,7 +521,7 @@
         },
 
         _ensureUI: function (ui) {
-            ui || (ui = _.result(this, '$$ui'));
+            ui || (ui = _.result(this, '__ui__'));
 
             if (!ui) {
                 return; // nothing to do here anymore
@@ -501,10 +534,10 @@
             }, this);
         },
 
-        _ensureSubviews: function (subViews, options) {
-            subViews || (subViews = _.result(this, '$$subViews'));
+        _ensureSubviews: function (children, options) {
+            children || (children = _.result(this, '__children__'));
 
-            if (!subViews) {
+            if (!children) {
                 return; // nothing to do here anymore
             }
 
@@ -512,7 +545,7 @@
                 this._renderView(viewClass, selector, options);
             };
 
-            _.each(subViews, renderView, this)
+            _.each(children, renderView, this)
         },
 
         _renderView: function (viewClass, selector, options) {
