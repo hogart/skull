@@ -1,11 +1,12 @@
 var require = {
-    baseUrl: '/',
+//    baseUrl: '/',
     paths: {
-        lib: 'lib',
-        underscore: 'lib/underscore',
-        backbone: 'lib/backbone',
-        jquery: 'lib/vendor/jquery',
-        skull: 'src/Skull'
+        lib: '/lib',
+        _: '/lib/underscore',
+        backbone: '/lib/backbone',
+        jquery: '/lib/jquery',
+        skull: '/src/Skull',
+        'tests/index-r': '/tests/index-r.js'
     },
 
     shim: {
