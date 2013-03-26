@@ -1,9 +1,15 @@
-define(
-    [
-        'skull'
-    ],
+(function () {
 
-    function (Skull) {
-        console.log(Skull);
-    }
-);
+    // Defer Qunit so RequireJS can work its magic and resolve all modules.
+    QUnit.config.autostart = false;
+
+    // A list of all QUnit test Modules.  Make sure you include the `.js` 
+    // extension so RequireJS resolves them as relative paths rather than using
+    // the `baseUrl` value supplied above.
+    var testModules = [
+        "/tests/UrlProvider.js"
+    ];
+
+    // Resolve all testModules and then start the Test Runner.
+    require(testModules, QUnit.start);
+}());

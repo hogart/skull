@@ -5,8 +5,7 @@ var require = {
         _: '/lib/underscore',
         backbone: '/lib/backbone',
         jquery: '/lib/jquery',
-        skull: '/src/Skull',
-        'tests/index-r': '/tests/index-r.js'
+        skull: '/src/Skull'
     },
 
     shim: {

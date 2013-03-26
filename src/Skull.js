@@ -135,6 +135,143 @@
         }
     };
 
+    /**
+     * Detects host and protocol for your API from `<script data-api-domain="http://my.api.example.com"/>`
+     * @param {String} [attributeName='data-api-domain'] Definitive attribute name
+     * @type {Function}
+     */
+    var detectDomain = Skull.detectDomain = function (attributeName) {
+        attributeName = attributeName || 'data-api-domain';
+
+        var path = $('script[' + attributeName + ']').attr(attributeName) || '',
+            pathParts = path.split('//');
+
+        if (pathParts.length === 2) {
+            return {
+                host: pathParts[1],
+                protocol: pathParts[0]
+            }
+        } else {
+            return {
+                host: path
+            }
+        }
+    };
+
+    function URLProvider(params) {
+        var _version = params.version || '1.0.0';
+        this.version = function(version) {
+            if (arguments.length) {
+                _version = version;
+            }
+            return _version;
+        };
+
+        var _type = params.type || 'passenger';
+        this.type = function(type) {
+            if (arguments.length) {
+                _type = type;
+            }
+            return _type;
+        };
+
+        var _host = params.host || '';
+        this.host = function(host) {
+            if (arguments.length) {
+                _host = host;
+            }
+            return _host;
+        };
+
+        var _protocol = params.protocol || '';
+        this.protocol = function(protocol) {
+            if (arguments.length) {
+                _protocol = protocol;
+            }
+            return _protocol;
+        };
+
+        var _apiPrefix = 'api';
+
+        var _protocol = params.protocol || '';
+        this.protocol = function(protocol) {
+            if (arguments.length) {
+                _protocol = protocol;
+            }
+            return _protocol;
+        };
+
+        this.getApiPath = function() {
+            return ['', _apiPrefix, _type, _version, ''].join('/')
+        };
+
+        this.getApiUrl = function() {
+            var result = [];
+            if (_host) {
+                if (_protocol) {
+                    result.push(_protocol)
+                }
+                result.push('//'); // HTTP scheme in URLProvider will be inherited in this case
+                result.push(_host);
+            }
+
+            result.push(this.getApiPath());
+
+            return result.join('/').replace(/(?!^)\/\//g, '/'); // replace all the '//' with single slash (but not starting ones, they're for purpose)
+        }
+    }
+
+    var UrlProvider = Skull.UrlProvider = Abstract.extend({
+        defaults: {
+            version: '',
+            type: '',
+            host: '',
+            protocol: '',
+            port: false,
+            prefix: ''
+        },
+
+        initialize: function (options) {
+            this.params = {};
+            this.set(options)
+        },
+
+        set: function (options) {
+            this.cachedPath = this.cachedUrl = false; // drop cache
+            this.params = _.extend(this.params, this.defaults);
+        },
+
+        getApiUrl: function () {
+            if (!this.cachedPath) {
+                var parts = [];
+
+                if (this.params.host) {
+                    parts.push('//');
+                    if (this.params.protocol) {
+                        parts.unshift(this.params.protocol + ':');
+                    }
+                    parts.push(this.params.host);
+
+                    if (this.params.port) {
+                        parts.push(':' + this.params.port)
+                    }
+                }
+
+                this.cachedPath = parts.join('') + this.getApiPath();
+            }
+
+            return this.cachedPath;
+        },
+
+        getApiPath: function () {
+            if (!this.cachedUrl) {
+                var parts = _.compact([this.params.prefix, this.params.host, this.params.port]);
+                this.cachedUrl = '/' + parts.join('/') + '/';
+            }
+
+            return this.cachedUrl;
+        }
+    });
 
     /**
      * Backbone.sync OO-style
