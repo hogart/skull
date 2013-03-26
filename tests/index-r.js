@@ -1,7 +1,7 @@
 (function () {
 
     // Defer Qunit so RequireJS can work its magic and resolve all modules.
-    QUnit.config.autostart = false;
+//    QUnit.config.autostart = false;
 
     // A list of all QUnit test Modules.  Make sure you include the `.js` 
     // extension so RequireJS resolves them as relative paths rather than using
