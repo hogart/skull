@@ -143,7 +143,13 @@
     var detectDomain = Skull.detectDomain = function (attributeName) {
         attributeName = attributeName || 'data-api-domain';
 
-        var path = $('script[' + attributeName + ']').attr(attributeName) || '',
+        var script = $('script[' + attributeName + ']');
+
+        if (!script.length) {
+            return {}
+        }
+
+        var path = script.attr(attributeName) || '',
             pathParts = path.split('//');
 
         if (pathParts.length === 2) {
@@ -826,6 +832,92 @@
         remove: function () {
             this.onBeforeRemove();
             View.__super__.remove.call(this);
+        }
+    });
+
+    /**
+     * Skull.Application is very basic sample of application.
+     * It does several things:
+     * 1. creates registry and registers itself as 'app'
+     * 2. detects domain and other url options
+     * 3. instantiates syncer
+     * 4. instantiates router
+     * 5. renders root view and starts Backbone.history, if autostart option passed
+     *
+     * App dispatches route changes. Bind to 'path' event to handle them.
+     * @class Skull.Application
+     * @extends Skull.Observable
+     */
+    var Application = Skull.Application = Observable.extend(/** @lends Skull.Application.prototype */{
+        defaults: {
+            node: 'html',
+            router: Backbone.Router,
+            syncer: Skull.Syncer,
+
+            history: {
+                root: '/'
+            }
+        },
+
+        /**
+         * @param options app options
+         * @param {Skull.View} options.rootView Skull.View class, intended to be root view
+         * @param {Backbone.Router} options.router Router class to be used
+         * @param {Skull.Syncer} [options.syncer=Skull.Syncer] Syncer class to be used
+         * @param {$|String|HTMLElement} [options.node='html'] root node for application; gets passed to options.rootView
+         * @param {String} [options.dataDomainSelector] selector to be passed to Skull.detectDomain
+         * @param {Object} [options.urlOptions] options for @see Skull.UrlProvider.
+         *
+         * @param {Boolean} [options.autostart=false] Whether application should start right when instantiated
+         */
+        initialize: function (options) {
+            this.registry = new Skull.ResourceRegistry();
+            var register = _.bind(registry.register, register);
+            register('app', this);
+
+            this.params = _.extend({}, this.defaults, options);
+
+            // URLs detecting
+            var domain = register('domain', Skull.detectDomain(this.params.dataDomainSelector)),
+                urlProvider = register(
+                    'urlProvider',
+                    new Skull.UrlProvider(_.extend({}, domain, this.params.urlOptions))
+                );
+            register('getApiUrl', _.bind(urlProvider.getApiUrl, urlProvider));
+
+            // create router
+            var router = register('router', new this.params.router());
+            router.on('all', this.onRoute, this);
+
+            // create syncer
+            register('syncer', new this.params.syncer());
+
+
+            // start app, if we should
+            this.params.autostart && this.start();
+        },
+
+        /**
+         * Renders root view and starts up Backbone.history.
+         * Call this when your app is ready (or pass options.autostart to Skull.Application#initialize).
+         * Feel free to override.
+         */
+        start: function () {
+            this.registry.register(
+                'rootView',
+                new this.params.rootView({el: this.params.node}, {registry: this.registry})
+            );
+
+            Backbone.history.start(this.params.history);
+        },
+
+        /**
+         * Primarily dispatches route change. Feel free to override.
+         * @param routeName
+         */
+        onRoute: function (routeName) {
+            var path = routeName.split(':')[1];
+            this.trigger('path', path, _.chain(arguments).toArray().tail().value());
         }
     });
 
