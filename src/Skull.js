@@ -10,7 +10,7 @@
         // Browser globals
         root.Skull = factory(root, {}, root._, root.Backbone, (root.jQuery || root.Zepto));
   }
-}(this, function (root, Skull, _, $) {
+}(this, function (root, Skull, _, Backbone, $) {
     'use strict';
 
     /**
@@ -149,7 +149,7 @@
         if (pathParts.length === 2) {
             return {
                 host: pathParts[1],
-                protocol: pathParts[0]
+                protocol: pathParts[0].substring(0, pathParts[0].length - 1)
             }
         } else {
             return {
