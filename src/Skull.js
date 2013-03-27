@@ -130,7 +130,7 @@
         if (items) {
             for (var key in items) {
                 requirement = _.isArray(items[key]) ? items[key] : [items[key]];
-                this[key] = registry.acquire.apply(registry, requirement);
+                context[key] = registry.acquire.apply(registry, requirement);
             }
         }
     };

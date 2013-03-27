@@ -35,7 +35,7 @@ define(
 
             QUnit.deepEqual(
                 registry.acquire(resName, param),
-                _.extend(option, param)
+                _.extend({}, option, param)
             )
         });
 

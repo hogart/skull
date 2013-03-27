@@ -11,7 +11,8 @@
         '/tests/detectDomain.js',
         '/tests/Abstract.js',
         '/tests/Observable.js',
-        '/tests/ResourceRegistry.js'
+        '/tests/ResourceRegistry.js',
+        '/tests/processRegistry.js'
 
     ];
 
