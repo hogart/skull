@@ -9,7 +9,10 @@
     var testModules = [
         '/tests/UrlProvider.js',
         '/tests/detectDomain.js',
-        '/tests/Abstract.js'
+        '/tests/Abstract.js',
+        '/tests/Observable.js',
+        '/tests/ResourceRegistry.js'
+
     ];
 
     // Resolve all testModules and then start the Test Runner.

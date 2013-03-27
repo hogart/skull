@@ -57,7 +57,7 @@
      * @extends Skull.Abstract
      * @constructor
      */
-    var ResourceRegistry = Skull.Abstract.extend({
+    var ResourceRegistry = Skull.ResourceRegistry = Skull.Abstract.extend({
         initialize: function () {
             /** @private */
             this._storage = {};
@@ -110,10 +110,10 @@
 
                     return create(params)
                 } else {
-                    return this._storage[key] || options;
+                    return this._storage[key];
                 }
             } else {
-                return this._storage[key]
+                return this._storage[key];
             }
         }
     });
