@@ -332,24 +332,26 @@
     });
 
     /**
-     * @class Model
+     * Skull.Model is basic model with few enhancements:
+     * registry handling, silentSet method and syncStart and syncEnd events
+     * @class Skull.Model
+     * @extends Backbone.Model
      */
-    var Model = Skull.Model = Backbone.Model.extend({
-        __registry__: {
-            syncer: 'syncer'
-        },
-
+    var Model = Skull.Model = Backbone.Model.extend(/** @lends Skull.Model.prototype */{
+        /** @constructs */
         constructor: function (attributes, options) {
             this.registry = options.registry;
             processRegistry(this);
 
             Model.__super__.constructor.call(this, attributes, options);
+
+            // more readable cid
+            this.cid = _.uniqueId('model');
         },
 
         /**
          * Almost the same as .set method, but always do it's work silently (i.e. not firing any event).
          * Useful when setting values from UI to prevent «event loop».
-         * Note that silentSet doesn't accept (key, value, options) arguments.
          * @param {Object|String} key Either key or properties hash
          * @param {Object} val Either value or options
          * @param {Object} [options={}] Additional options
@@ -369,6 +371,10 @@
             return this.set(attrs, options);
         },
 
+        /**
+         * Overridden for registry handling
+         * @returns {this.constructor}
+         */
         clone: function () {
             return new this.constructor(this.attributes, {registry: this.registry});
         },
@@ -419,7 +425,7 @@
 
         /**
          * toTemplate is reserved for generating data for rendering,
-         * e.g. for computed values and so on. Feel free to override
+         * e.g. for computed values and so on. Feel free to override.
          * @returns {Object}
          */
         toTemplate: function () {
@@ -429,16 +435,63 @@
         }
     });
 
-    var Collection = Skull.Collection = Backbone.Collection.extend({
+    /**
+     * Skull.RestModel is Model more suitable for REST, with reasonable defaults
+     * @class Skull.RestModel
+     * @extends Skull.Model
+     */
+    var RestModel = Skull.RestModel = Model.extend(/** @lends Skull.RestModel.prototype */{
+        __registry__: {
+            syncer: 'syncer',
+            getApiUrl: 'getApiUrl'
+        },
+
+        url: function () {
+            var url = this.getApiUrl() + this.resource + '/';
+
+            if (this.id) {
+                url += encodeURIComponent(this.id) + '/';
+            }
+
+            return url;
+        },
+
+        /** @constructs */
+        constructor: function (attributes, options) {
+            RestModel.__super__.constructor.call(this, attributes, options);
+
+            // make sure we have resource
+            if (!this.resource) {
+                throw new Error('Missing "resource" field');
+            }
+
+            // generate more readable cid
+            this.cid = _.uniqueId('model.' + this.resource);
+        }
+
+    });
+
+    /**
+     * Skull.Collection is basic model with few enhancements:
+     * registry handling, syncStart and syncEnd events
+     * @class Skull.Collection
+     * @extends Backbone.Collection
+     */
+    var Collection = Skull.Collection = Backbone.Collection.extend(/** @lends Skull.Collection.prototype */{
         __registry__: {
             syncer: 'syncer'
         },
 
+        model: Model,
+
+        /** @constructs */
         constructor: function (models, options) {
             this.registry = options.registry;
             processRegistry(this);
 
             Collection.__super__.constructor.call(this, models, options);
+
+            this.cid = _.uniqueId('collection');
         },
 
         /**
@@ -495,12 +548,53 @@
             return _.invoke(this.models, 'toTemplate')
         },
 
+        /**
+         * Prepare a hash of attributes (or other model) to be added to this collection.
+         * Takes care of registry passing.
+         * @param {Object} attrs future model attrs
+         * @param {Object} [options={}]
+         * @private
+         */
         _prepareModel: function (attrs, options) {
             (options || (options = {})).registry = this.registry;
 
             Collection.__super__._prepareModel.call(this, attrs, options);
         }
+    });
 
+    /**
+     * Skull.RestCollection is Collection more suitable for REST, with reasonable defaults
+     * @class Skull.RestCollection
+     * @extends Skull.Collection
+     */
+    var RestCollection = Collection.extend(/** @lends Skull.RestCollection.prototype */{
+        __registry__: {
+            syncer: 'syncer',
+            getApiUrl: 'getApiUrl'
+        },
+
+        model: RestModel,
+
+        url: function () {
+            var url = this.getApiUrl();
+            url += this.resource + '/';
+
+            return url;
+        },
+
+        /** @constructs */
+        constructor: function (models, options) {
+            // make sure we have resource
+            if (!this.model.prototype.resource) {
+                throw new Error('Missing "resource" field');
+            } else {
+                this.resource = this.model.prototype.resource;
+            }
+
+            RestCollection.__super__.constructor.call(this, models, options);
+
+            this.cid = _.uniqueId('collection.' + this.resource);
+        }
     });
 
     var View = Skull.View = Backbone.View.extend({
