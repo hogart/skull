@@ -337,6 +337,103 @@
         }
     });
 
+    var Templater = Skull.Templater = Abstract.extend({
+        defaults: {
+            selectorPrefix: 'script.js-tpl-',
+            trim: true,
+            debug: false,
+            dontCache: false
+        },
+
+        tplFunction: _.template,
+
+        initialize: function (options) {
+            /**
+             * Holds all compiled templates.
+             * Instance property.
+             * @private
+             */
+            this._templates = {};
+
+            this.params = _.extend({}, this.defaults, options);
+        },
+
+        _getTemplateNode: function (name) {
+            var fullSelector = this.options.selectorStart + name,
+                node = $(fullSelector);
+
+            if (!node.length) {
+                throw new Error('No such template: "' + name + '". Make sure you have "' + fullSelector + '" node on your page')
+            } else if (node.length > 1) {
+                node = node.eq(0);
+
+                if (this.params.debug) {
+                    console.warn('Too many template nodes: ' + fullSelector);
+                }
+            }
+
+            return node;
+        },
+
+        _preprocessTemplate: function (node) {
+            var rawTemplate = node.text();
+
+            if (this.params.trim) {
+                rawTemplate = $.trim(rawTemplate)
+            }
+
+            return rawTemplate
+        },
+
+        _compileTemplate: function (rawTemplate) {
+            return this.tplFunction(rawTemplate);
+        },
+
+        _getCompiledTemplate: function (name) {
+            var node = this._getTemplateNode(name),
+                processed = this._preprocessTemplate(node),
+                compiled = this._compileTemplate(processed);
+
+            return compiled;
+        },
+
+        _getTemplate: function (name) {
+            if (this._templates[name] && !this.params.dontCache) {
+                return this._templates[name];
+            } else {
+                var tpl = this._getCompiledTemplate();
+                this._templates[name] = tpl;
+                return tpl;
+            }
+        },
+
+        /**
+         * Caching proxy for template engine
+         * @param {String} name
+         * @param {Object} [tplData=null] if passed, function returns rendered template. If not, compiled template
+         * @param {Function} [callback=null] if defined, will be called instead of returning result
+         */
+        tmpl: function (name, tplData, callback) {
+            var tpl = this._getTemplate(name);
+
+            if (arguments.length > 1) {
+                this.params.context && (tplData.__context__ = context);
+
+                tpl = tpl(tplData);
+
+                if (this.params.debug) {
+                    tpl = '<!-- tpl:' + name + '-->\n' + tpl + '<!-- /tpl:' + name + '-->';
+                }
+            }
+
+            if (callback) {
+                callback(tpl);
+            } else {
+                return tpl;
+            }
+        }
+    });
+
     /**
      * Skull.Model is basic model with few enhancements:
      * registry handling, silentSet method and syncStart and syncEnd events
