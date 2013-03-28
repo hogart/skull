@@ -338,12 +338,12 @@
     });
 
     /**
-     * Skull.Templater provides wrapper for template engine (_.template by default).
+     * Skull.Template provides wrapper for template engine (_.template by default).
      * This wrapper performs caching, error handling, bit of debugging info.
-     * By default Skull.Templater fetches templates stored in `script` tags with js-tpl-<templateName> class.
-     * @class Templater
+     * By default Skull.Template fetches templates stored in `script` tags with 'js-tpl-<templateName>' class.
+     * @class Template
      */
-    var Templater = Skull.Templater = Abstract.extend({
+    var Template = Skull.Template = Abstract.extend({
         defaults: {
             selectorPrefix: 'script.js-tpl-',
             trim: true,
@@ -381,9 +381,10 @@
          * @param {String} name
          * @returns {jQuery}
          * @private
+         * @throws {Error} 'No such template'
          */
         _getTemplateNode: function (name) {
-            var fullSelector = this.params.selectorStart + name,
+            var fullSelector = this.params.selectorPrefix + name,
                 node = $(fullSelector);
 
             if (!node.length) {
@@ -441,22 +442,22 @@
 
         /**
          * Returns either cached compiled template or compiles it, caches and returns it
-         * @param name
-         * @returns {*}
+         * @param {String} name template name
+         * @returns {Function} compiled template
          * @private
          */
         _getTemplate: function (name) {
             if (this._templates[name] && !this.params.dontCache) {
                 return this._templates[name];
             } else {
-                var tpl = this._getCompiledTemplate();
+                var tpl = this._getCompiledTemplate(name);
                 this._templates[name] = tpl;
                 return tpl;
             }
         },
 
         /**
-         * This normally should be only one Templater method you call from other places.
+         * This normally should be only one Template method you call from other places.
          * When provided with truthie second argument, returns rendered templates, otherwise, compiled.
          * When provided with third argument, calls it with passing, again, rendered or compiled template.
          * @param {String} name
@@ -757,7 +758,7 @@
 
     var View = Skull.View = Backbone.View.extend({
         __registry__: {
-            templater: 'templater'
+            template: 'template'
         },
 
         // Whether this.$el will be overriden on rendering
@@ -810,7 +811,7 @@
             }
 
             // rendering at last
-            var rendered = this.templater.tmpl(tpl, data);
+            var rendered = this.template.tmpl(tpl, data);
 
             if (replaceEl) {
                 var $rendered = $(rendered);
@@ -1044,8 +1045,8 @@
             // create syncer
             register('syncer', new this.params.syncer());
 
-            // create templater
-            register('templater', new this.params.templater());
+            // create template handler
+            register('template', new this.params.template());
 
 
             // start app, if we should

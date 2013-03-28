@@ -5,7 +5,8 @@
         '/tests/suit/Abstract.js',
         '/tests/suit/Observable.js',
         '/tests/suit/ResourceRegistry.js',
-        '/tests/suit/processRegistry.js'
+        '/tests/suit/processRegistry.js',
+        '/tests/suit/Template.js',
     ];
 
     // Resolve all testModules and then start the Test Runner.
