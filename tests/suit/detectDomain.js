@@ -14,13 +14,13 @@ define(
             teardown: function () { scriptTag.remove() }
         });
 
-        QUnit.test('domain and protocol', function () {
+        QUnit.test('domain and protocol', function (QUnit) {
             createTag('http://example.com');
 
             QUnit.deepEqual(detectDomain(), {host: 'example.com', protocol: 'http'});
         });
 
-        QUnit.test('custom attribute name', function () {
+        QUnit.test('custom attribute name', function (QUnit) {
             createTag('https://example.com', 'data-domain');
 
             QUnit.deepEqual(detectDomain('data-domain'), {host: 'example.com', protocol: 'https'});

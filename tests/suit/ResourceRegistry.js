@@ -13,7 +13,7 @@ define(
 //            teardown: function () {  }
         });
 
-        QUnit.test('registry stores and fetches plain resources', 2, function () {
+        QUnit.test('registry stores and fetches plain resources', 2, function (QUnit) {
             var resName = 'testRes',
                 val = 'testValue';
 
@@ -23,7 +23,7 @@ define(
             QUnit.equal(registry.acquire(resName), val);
         });
 
-        QUnit.test('registry stores and fetches factories', 3, function () {
+        QUnit.test('registry stores and fetches factories', 3, function (QUnit) {
             var option = {answer: 42},
                 param = {question: 'To be or not to be'},
                 resName = 'testFactory';
@@ -39,7 +39,7 @@ define(
             )
         });
 
-        QUnit.test('ResourceRegistry#acquire returns undefined on unknown key', 2, function () {
+        QUnit.test('ResourceRegistry#acquire returns undefined on unknown key', 2, function (QUnit) {
             QUnit.equal(registry.acquire('some crazy key'), undefined);
             QUnit.equal(registry.acquire('some crazy key', {test: true}), undefined);
         });

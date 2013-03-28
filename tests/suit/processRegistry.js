@@ -9,13 +9,12 @@ define(
         registry.register('fabric', function (val) { return val }, option)
 
 
-
         QUnit.module('Skull.processRegistry', {
 //            setup: function () {  },
 //            teardown: function () {  }
         });
 
-        QUnit.test('processRegistry acquires values from registry when __registry__ is plain object', function () {
+        QUnit.test('processRegistry acquires values from registry when __registry__ is plain object', function (QUnit) {
             var param = {question: 'To be or not to be'},
                 obj = {
                 registry: registry,
@@ -31,7 +30,7 @@ define(
             QUnit.deepEqual(obj.fabric, _.extend({}, option, param));
         });
 
-        QUnit.test('processRegistry acquires values from registry when __registry__ is function', function () {
+        QUnit.test('processRegistry acquires values from registry when __registry__ is function', function (QUnit) {
             var param = {question: 'To be or not to be'},
                 obj = {
                 registry: registry,

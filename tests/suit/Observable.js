@@ -8,7 +8,7 @@ define(
 //            teardown: function () {  }
         });
 
-        QUnit.test('Observable descendant has appropriate methods', 4, function () {
+        QUnit.test('descendants has appropriate methods', 4, function (QUnit) {
             var Bus = Observable.extend({}),
                 bus = new Bus;
 
