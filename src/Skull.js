@@ -337,6 +337,12 @@
         }
     });
 
+    /**
+     * Skull.Templater provides wrapper for template engine (_.template by default).
+     * This wrapper performs caching, error handling, bit of debugging info.
+     * By default Skull.Templater fetches templates stored in `script` tags with js-tpl-<templateName> class.
+     * @class Templater
+     */
     var Templater = Skull.Templater = Abstract.extend({
         defaults: {
             selectorPrefix: 'script.js-tpl-',
@@ -347,6 +353,14 @@
 
         tplFunction: _.template,
 
+        /**
+         * @param {Object} options
+         * @param {String} [options.selectorPrefix='script.js-tpl-'] default selector for finding template nodes
+         * @param {Boolean} [options.trim=true] trim whitespaces from template before compiling
+         * @param {Boolean} [options.debug=false] provide debugging info in rendered templates and to console
+         * @param {Boolean} [options.dontCache=false] Useful when developing, you can change template right on page without reloading it
+         * @param {Function} [options.tplFunction=_.template] Template function must accept template string and return compiled to function template
+         */
         initialize: function (options) {
             /**
              * Holds all compiled templates.
@@ -356,10 +370,20 @@
             this._templates = {};
 
             this.params = _.extend({}, this.defaults, options);
+
+            if (options.tplFunction) {
+                this.tplFunction = options.tplFunction
+            }
         },
 
+        /**
+         * Fetches template by name.
+         * @param {String} name
+         * @returns {jQuery}
+         * @private
+         */
         _getTemplateNode: function (name) {
-            var fullSelector = this.options.selectorStart + name,
+            var fullSelector = this.params.selectorStart + name,
                 node = $(fullSelector);
 
             if (!node.length) {
@@ -375,6 +399,12 @@
             return node;
         },
 
+        /**
+         * Primary templates processing – e.g. whitespace trimming
+         * @param {jQuery} node
+         * @returns {String}
+         * @private
+         */
         _preprocessTemplate: function (node) {
             var rawTemplate = node.text();
 
@@ -385,10 +415,22 @@
             return rawTemplate
         },
 
+        /**
+         * Compiles template to function
+         * @param {String} rawTemplate
+         * @returns {Function}
+         * @private
+         */
         _compileTemplate: function (rawTemplate) {
             return this.tplFunction(rawTemplate);
         },
 
+        /**
+         * Gets compiled template by its name
+         * @param {String} name
+         * @returns {Function}
+         * @private
+         */
         _getCompiledTemplate: function (name) {
             var node = this._getTemplateNode(name),
                 processed = this._preprocessTemplate(node),
@@ -397,6 +439,12 @@
             return compiled;
         },
 
+        /**
+         * Returns either cached compiled template or compiles it, caches and returns it
+         * @param name
+         * @returns {*}
+         * @private
+         */
         _getTemplate: function (name) {
             if (this._templates[name] && !this.params.dontCache) {
                 return this._templates[name];
@@ -408,24 +456,31 @@
         },
 
         /**
-         * Caching proxy for template engine
+         * This normally should be only one Templater method you call from other places.
+         * When provided with truthie second argument, returns rendered templates, otherwise, compiled.
+         * When provided with third argument, calls it with passing, again, rendered or compiled template.
          * @param {String} name
-         * @param {Object} [tplData=null] if passed, function returns rendered template. If not, compiled template
-         * @param {Function} [callback=null] if defined, will be called instead of returning result
+         * @param {Object} [tplData=null] if passed, function returns rendered template. If not, compiled template.
+         * @param {Function} [callback=null] if defined, will be called instead of returning result.
+         * @return {Function|String|undefined}
          */
         tmpl: function (name, tplData, callback) {
             var tpl = this._getTemplate(name);
 
-            if (arguments.length > 1) {
-                this.params.context && (tplData.__context__ = context);
+            if (arguments.length > 1 && tplData) { // should return already rendered template
+
+                // specify context information, e.g. l10n string, common application data…
+                this.params.context && (tplData.__context__ = this.params.context);
 
                 tpl = tpl(tplData);
 
                 if (this.params.debug) {
+                    // surround with debugging comment so we can see where template starts and ends
                     tpl = '<!-- tpl:' + name + '-->\n' + tpl + '<!-- /tpl:' + name + '-->';
                 }
             }
 
+            // can be used with async rendering
             if (callback) {
                 callback(tpl);
             } else {
@@ -988,6 +1043,9 @@
 
             // create syncer
             register('syncer', new this.params.syncer());
+
+            // create templater
+            register('templater', new this.params.templater());
 
 
             // start app, if we should
