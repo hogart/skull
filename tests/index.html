@@ -3,14 +3,18 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0 user-scalable=yes"/>
-  <title></title>
+  <title>Backbone.Skull tests</title>
 
-  <link rel="stylesheet" type="text/css" href=""/>
+  <link rel="stylesheet" type="text/css" href="/lib/qunit.css"/>
   <style></style>
 
-  <script></script>
+  <script src="/lib/qunit.js"></script>
+  <script>QUnit.config.autostart = false;</script>
+  <script src="/tests/requireConfig.js"></script>
+  <script data-main="/tests/tests" src="/lib/require.js"></script>
 </head>
 <body>
-
+  <div id="qunit"></div>
+  <div id="qunit-fixture"></div>
 </body>
 </html>
