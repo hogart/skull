@@ -477,7 +477,7 @@
 
                 if (this.params.debug) {
                     // surround with debugging comment so we can see where template starts and ends
-                    tpl = '<!-- tpl:' + name + '-->\n' + tpl + '<!-- /tpl:' + name + '-->';
+                    tpl = '<!-- tpl:' + name + ' -->\n' + tpl + '\n<!-- /tpl:' + name + ' -->';
                 }
             }
 

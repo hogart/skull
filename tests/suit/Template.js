@@ -6,6 +6,7 @@ define(
         function createTemplate (name, content) {
             tplNode = $('<script type="text/x-template" class="js-tpl-' + name + '">' + content + '</script>');
             tplNode.appendTo('body');
+            return tplNode;
         }
 
         QUnit.module('Skull.Template', {
@@ -13,7 +14,7 @@ define(
             teardown: function () { tplNode.remove() }
         });
 
-        QUnit.test('Finds correct node by template name and throws exception when can\'t do that', function () {
+        QUnit.test('Finds correct node by template name and throws exception when can\'t do that', function (QUnit) {
             createTemplate('test', '');
             var template = new Template({}),
                 node = template._getTemplateNode('test');
@@ -29,7 +30,7 @@ define(
             );
         });
 
-        QUnit.test('Correctly prepares template according to config', function () {
+        QUnit.test('Correctly prepares template according to config', function (QUnit) {
             createTemplate('test', ' testing ');
 
             var template = new Template({}),
@@ -45,7 +46,7 @@ define(
             QUnit.equal(' testing ', tpl, 'Non-trimmed template');
         });
 
-        QUnit.test('Fetches and compiles template correctly', function () {
+        QUnit.test('Fetches and compiles template correctly', function (QUnit) {
             createTemplate('test', '<%= 40 + 2 %>');
 
             var template = new Template({}),
@@ -60,7 +61,7 @@ define(
             QUnit.equal('42', fetchedCompiled({}), 'Template "<%= 40 + 2 %>" fetched and compiled to function returning string "42"');
         });
 
-        QUnit.test('Caches compiled template according to config', 3, function () {
+        QUnit.test('Caches compiled template according to config', 3, function (QUnit) {
             createTemplate('test', '<%= 40 + 2 %>');
 
             var template = new Template({}),
@@ -88,7 +89,7 @@ define(
         QUnit.test(
             '#tmpl returns compiled or rendered template, or calls callback dependent on how many arguments passed',
             4,
-            function () {
+            function (QUnit) {
                 createTemplate('test', '<%= 40 + 2 %>');
 
                 var template = new Template({});
@@ -110,5 +111,28 @@ define(
                 template.tmpl('test', {}, cbRendered);
             }
         );
+
+        QUnit.test('Correctly shows debug info', 2, function (QUnit) {
+            var tpl1 = createTemplate('test', '<%= 40 + 2 %>'),
+                tpl2 = createTemplate('test', '<%= "64 teeth" %>'),
+                template = new Template({debug: true}),
+                oldConsole = window.console;
+
+            window.console = {
+                warn: function (msg) {
+                    QUnit.ok(msg, 'Prints to console about multiply templates')
+                }
+            };
+
+            var rendered = template.tmpl('test', {});
+
+            // clean up
+            window.console = oldConsole;
+            tpl2.remove();
+
+            QUnit.equal(rendered, '<!-- tpl:test -->\n42\n<!-- /tpl:test -->', 'Surrounds rendered template to debugging comments');
+
+            tpl1.remove(); console.warn('test')
+        });
     }
 );
