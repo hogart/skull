@@ -164,7 +164,15 @@
         }
     };
 
-
+    /**
+     * A tool to combine domains, ports, protocols, API endpoints with versions ans subtypes into URL.
+     * Any URL consists of following parts: <protocol>://<domain>/<prefix>/<type>/<version>/
+     * None of this parts are required, but you should understand that setting protocol without domain
+     * will result in relative URL from current domain root: /restEndpoint/clients/1.0.0/
+     * Note that skipping protocol and adding domain will lead to inheriting protocol from current document:
+     * //my.api.example.com/restEndpoint/clients/1.0.0/. This is completely valid URL.
+     * @class Skull.UrlProvider
+     */
     var UrlProvider = Skull.UrlProvider = Abstract.extend({
         defaults: {
             version: '',
@@ -180,11 +188,19 @@
             this.set(options)
         },
 
+        /**
+         * Updates inner state of URL pieces
+         * @param {Object} options
+         */
         set: function (options) {
             this.cachedPath = this.cachedUrl = false; // drop cache
             this.params = _.extend({}, this.defaults, options);
         },
 
+        /**
+         * Get absolute URL, with domain and protocol if provided.
+         * @returns {String}
+         */
         getApiUrl: function () {
             if (!this.cachedPath) {
                 var parts = [];
@@ -207,6 +223,10 @@
             return this.cachedPath;
         },
 
+        /**
+         * Returns relative URL form root of domain.
+         * @returns {String}
+         */
         getApiPath: function () {
             if (!this.cachedUrl) {
                 var parts = _.compact([this.params.prefix, this.params.type, this.params.version]);
@@ -700,7 +720,8 @@
         },
 
          /**
-          * @see Model#toTemplate
+          * Provides data for templates.
+          * {@link Model#toTemplate}
           * @returns {Object[]}
           */
         toTemplate: function () {
@@ -756,22 +777,61 @@
         }
     });
 
-    var View = Skull.View = Backbone.View.extend({
+    /**
+     * Fused with automagic, Skull.View is highly configurable tool for creating and manipulating your app's views.
+     * Core differences with vanilla Backbone.View is following:
+     * # Full-cycle nested views automated managing, {@link Skull.View#__children__}
+     * # Handy access to often used nodes inside view, {@link Skull.View#__ui__}
+     * # Preventing memory leaks and "zombie" callbacks with more thorough {@link Skull.View#remove} method
+     * @class {Skull.View}
+     */
+    var View = Skull.View = Backbone.View.extend(/** @lends Skull.View.prototype */{
         __registry__: {
             template: 'template'
         },
 
-        // Whether this.$el will be overriden on rendering
+        // Whether this.$el will be completely replaced on rendering
         replaceEl: false,
+
+        /**
+         * Automatically (and not, if you wish) creates and renders nested views.
+         * Actually is a hash. Each field can take 4 forms:
+         * # '.js-someSelector': MyViewClass
+         * # '.js-anotherSelector': [MyViewClass, {answer: 42}] // second element will be passed to MyViewClass constructor
+         * # '.js-yetAnotherSelector': [MyViewClass, 'someMethodName'] // this['someMethodName'] will be called in proper context (`this`),
+         *   and result will be passed to MyViewClass constructor
+         * # '.js-selectorToo': [MyViewClass, function () { return {answer: 42} }] // second element will be called in proper context,
+         *   and result will be passed to MyViewClass constructor
+         *
+         * All mentioned views will be placed to `this.children` hash for further managing during {@link Skull.View#onRender}.
+         *
+         * @type {Object}
+         */
+        __children__: null,
+
+        /**
+         * Automatically (and not, if you wish) creates links to nodes inside your view. This is useful (and handy),
+         * when you change some node's attributes several times during view's lifecycle.
+         * Actually is a config in following form:
+         * somePrettyName: '.some .selector'
+         *
+         * All defined bits will be placed to `this.ui` hash for further managing during {@link Skull.View#onRender}.
+         */
+        __ui__: null,
 
         constructor: function (options) {
             this.registry = options.registry;
             processRegistry(this);
 
             View.__super__.constructor.call(this, options);
+
+            // more readable cid
+            this.cid = _.uniqueId('view');
         },
 
         initialize: function (options) {
+            View.__super__.initialize.call(this.options);
+
             // semi-automated child views management. Should be instance property.
             this.children = {};
         },
@@ -837,7 +897,7 @@
         },
 
         /**
-         * Performs declarative bindings: subViews, events.
+         * Performs declarative bindings: __children__, __ui__, events
          * Call this method when html is ready.
          */
         onRender: function () {
@@ -963,12 +1023,19 @@
             delete this.children[viewName];
         },
 
+        /**
+         * Carefully removes *all* nested views
+         * @private
+         */
         _unregisterChildren: function () {
             _.each(this.children, function (child, childName) {
                 this.unregisterChild(childName);
             }, this);
         },
 
+        /**
+         * Cleans up: removes nested views, shuts down events both DOM and Backbone's
+         */
         onBeforeRemove: function () {
             this._unregisterChildren();
 
@@ -976,7 +1043,6 @@
             this.$el.off();
 
             this.off();
-            this.stopListening();
         },
 
         /**
@@ -992,9 +1058,10 @@
      * Skull.Application is very basic sample of application.
      * It does several things:
      * 1. creates registry and registers itself as 'app'
-     * 2. detects domain and other url options
+     * 2. detects domain and other passes URL to UrlProvider
      * 3. instantiates syncer
      * 4. instantiates router
+     * 5. Detects if debug mode is on
      * 5. renders root view and starts Backbone.history, if autostart option passed
      *
      * App dispatches route changes. Bind to 'path' event to handle them.
@@ -1019,7 +1086,8 @@
          * @param {Skull.Syncer} [options.syncer=Skull.Syncer] Syncer class to be used
          * @param {$|String|HTMLElement} [options.node='html'] root node for application; gets passed to options.rootView
          * @param {String} [options.dataDomainSelector] selector to be passed to Skull.detectDomain
-         * @param {Object} [options.urlOptions] options for @see Skull.UrlProvider.
+         * @param {Object} [options.urlOptions] options for {@link Skull.UrlProvider}.
+         * @param {Boolean} [options.debug=false] Whether we are in debug mode, you can provide other ways for checking it
          *
          * @param {Boolean} [options.autostart=false] Whether application should start right when instantiated
          */
@@ -1029,6 +1097,9 @@
             register('app', this);
 
             this.params = _.extend({}, this.defaults, options);
+
+            // determine if we're in debug mode
+            register('debug', this._isDebug(this.params));
 
             // URLs detecting
             var domain = register('domain', Skull.detectDomain(this.params.dataDomainSelector)),
@@ -1074,6 +1145,16 @@
         onRoute: function (routeName) {
             var path = routeName.split(':')[1];
             this.trigger('path', path, _.chain(arguments).toArray().tail().value());
+        },
+
+        /**
+         * How application determines if debug is on. Feel free to override,
+         * this naïve implementation considers only if there's truthy field `debug`
+         * @param {Object} params
+         * @private
+         */
+        _isDebug: function (params) {
+            this.debug = !!params.debug;
         }
     });
 
