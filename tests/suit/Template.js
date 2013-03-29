@@ -132,7 +132,7 @@ define(
 
             QUnit.equal(rendered, '<!-- tpl:test -->\n42\n<!-- /tpl:test -->', 'Surrounds rendered template to debugging comments');
 
-            tpl1.remove(); console.warn('test')
+            tpl1.remove();
         });
     }
 );
