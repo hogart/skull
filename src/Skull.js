@@ -57,7 +57,7 @@
      * @extends Skull.Abstract
      * @constructor
      */
-    var ResourceRegistry = Skull.ResourceRegistry = Skull.Abstract.extend({
+    var ResourceRegistry = Skull.ResourceRegistry = Skull.Abstract.extend(/** @lends Skull.ResourceRegistry.prototype */{
         initialize: function () {
             /** @private */
             this._storage = {};
@@ -173,7 +173,7 @@
      * //my.api.example.com/restEndpoint/clients/1.0.0/. This is completely valid URL.
      * @class Skull.UrlProvider
      */
-    var UrlProvider = Skull.UrlProvider = Abstract.extend({
+    var UrlProvider = Skull.UrlProvider = Abstract.extend(/** @lends Skull.UrlProvider.prototype */{
         defaults: {
             version: '',
             type: '',
@@ -390,7 +390,7 @@
      * By default Skull.Template fetches templates stored in `script` tags with 'js-tpl-<templateName>' class.
      * @class Template
      */
-    var Template = Skull.Template = Abstract.extend({
+    var Template = Skull.Template = Abstract.extend(/** @lends Skull.Template.prototype */{
         defaults: {
             selectorPrefix: 'script.js-tpl-',
             trim: true,
