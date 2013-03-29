@@ -5,10 +5,16 @@ var require = {
         underscore: '/lib/underscore',
         backbone: '/lib/backbone',
         jquery: '/lib/jquery',
-        skull: '/src/Skull'
+        skull: '/src/Skull',
+        mockjax: '/lib/jquery.mockjax'
     },
 
     shim: {
-        jquery: {exports: '$'}
+        jquery: {exports: '$'},
+
+        'mockjax': {
+            deps: ['jquery'],
+            exports: 'jQuery.mockjax'
+        }
     }
 };

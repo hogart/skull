@@ -7,6 +7,8 @@
         '/tests/suit/ResourceRegistry.js',
         '/tests/suit/processRegistry.js',
         '/tests/suit/Template.js',
+        '/tests/suit/Syncer.js'
+
     ];
 
     // Resolve all testModules and then start the Test Runner.

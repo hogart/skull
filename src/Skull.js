@@ -290,7 +290,7 @@
          * Pretty much the same as Backbone.sync, only allows to extend requests with authorization headers
          * @param {String} method
          * @param {Backbone.Model|Backbone.Collection} model
-         * @param {Object} options Allows to override any request param
+         * @param {Object} [options={}] Allows to override any request param
          * @returns {jQuery.Deferred}
          */
         sync: function(method, model, options) {
@@ -362,8 +362,14 @@
          * @private
          */
         _authorize: function (params) {
-            if (this.getToken && this.getToken() && this.authHeaderName) {
-                params.headers[this.authHeaderName] = this.getToken();
+            var token = this.getToken ? this.getToken() : false,
+                headerName = this.params.authHeaderName;
+
+            if (token && headerName) {
+                if (!params.headers) {
+                    params.headers = {}
+                }
+                params.headers[headerName] = token;
             }
 
             return params;
