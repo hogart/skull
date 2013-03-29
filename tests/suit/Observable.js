@@ -1,6 +1,6 @@
 define(
     function (require) {
-        var Observable = require('skull').Observable
+        var Observable = require('skull').Observable;
 
 
         QUnit.module('Skull.Observable', {
@@ -8,7 +8,7 @@ define(
 //            teardown: function () {  }
         });
 
-        QUnit.test('descendants has appropriate methods', 4, function (QUnit) {
+        QUnit.test('descendants has appropriate methods', 7, function (QUnit) {
             var Bus = Observable.extend({}),
                 bus = new Bus;
 
