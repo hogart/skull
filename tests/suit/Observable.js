@@ -14,7 +14,10 @@ define(
 
             QUnit.ok(bus.on, 'Has `on`');
             QUnit.ok(bus.off, 'Has `off`');
+            QUnit.ok(bus.once, 'Has `once`');
+            QUnit.ok(bus.trigger, 'Has `trigger`');
             QUnit.ok(bus.listenTo, 'Has `listenTo`');
+            QUnit.ok(bus.listenToOnce, 'Has `listenTo`');
             QUnit.ok(bus.stopListening, 'Has `stopListening`');
         });
     }
