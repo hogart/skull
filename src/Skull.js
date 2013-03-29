@@ -238,10 +238,14 @@
     });
 
     /**
-     * Backbone.sync OO-style
-     * Can emit auhorized requests, when provided with getToken function and authHeaderName
+     * Backbone.sync OOP-style
+     * Can emit auhorized requests, when provided with getToken function via registry
      */
-    var Syncer = Skull.Syncer = Skull.Abstract.extend({
+    var Syncer = Skull.Syncer = Skull.Abstract.extend(/** @lends Skull.Syncer.prototype */{
+        __registry__: {
+            getToken: 'getToken'
+        },
+
         /**
          * Map from CRUD to HTTP for our default syncer implementation.
          * @private
@@ -254,6 +258,12 @@
             'patch': 'PATCH'
         },
 
+        defaults: {
+            authHeaderName: 'Authorization',
+            emulateHTTP: false,
+            emulateJSON: false
+        },
+
         /**
          * @private
          */
@@ -261,22 +271,33 @@
             throw new Error('A "url" property or function must be specified');
         },
 
+        /**
+         * @constructs
+         * @param {Object} options
+         * @param {Boolean} [options.emulateHTTP=false] emulate HTTP 1.1 methods for old servers
+         * @param {Boolean} [options.emulateJSON=false] emulate JSON by encoding the request into an HTML-form
+         * @param {String} [options.authHeaderName='Authorization'] emulate JSON by encoding the request into an HTML-form
+         * @param {Skull.ResourceRegistry} options.registry registry instance
+         */
         initialize: function (options) {
-            this.getToken = options.getToken;
-            this.authHeaderName = options.authHeaderName;
+            this.registry = options.registry;
+            processRegistry(this);
 
-            this.emulateHTTP = options.emulateHTTP || false;
-            this.emulateJSON = options.emulateJSON || false;
+            this.params = _.extend({}, this.defaults, options);
         },
 
+        /**
+         * Pretty much the same as Backbone.sync, only allows to extend requests with authorization headers
+         * @param {String} method
+         * @param {Backbone.Model|Backbone.Collection} model
+         * @param {Object} options Allows to override any request param
+         * @returns {jQuery.Deferred}
+         */
         sync: function(method, model, options) {
             var type = this._methodMap[method];
 
             // Default options, unless specified.
-            _.defaults(options || (options = {}), {
-                emulateHTTP: this.emulateHTTP,
-                emulateJSON: this.emulateJSON
-            });
+            _.defaults(options || (options = {}), _.pick(this.params, 'emulateHTTP', 'emulateJSON'));
 
             // Default JSON-request options.
             var params = {type: type, dataType: 'json'};
@@ -335,9 +356,9 @@
         },
 
         /**
-         * Augments request params with authorization header
+         * Augments request params with authorization header. Feel free to override.
          * @param {Object} params
-         * @returns {Object}
+         * @returns {Object} augmented request params
          * @private
          */
         _authorize: function (params) {
@@ -512,7 +533,7 @@
 
     /**
      * Skull.Model is basic model with few enhancements:
-     * registry handling, silentSet method and syncStart and syncEnd events
+     * registry handling, `silentSet` method and `syncStart` and `syncEnd` events
      * @class Skull.Model
      * @extends Backbone.Model
      */
@@ -552,7 +573,7 @@
 
         /**
          * Overridden for registry handling
-         * @returns {this.constructor}
+         * @returns {Skull.Model}
          */
         clone: function () {
             return new this.constructor(this.attributes, {registry: this.registry});
@@ -560,7 +581,7 @@
 
         /**
          * Wraps any persistent operations so they trigger 'syncStart' and 'syncEnd' events every time.
-         * Useful for triggering show/hide preloaders in UI and so on
+         * Useful for triggering show/hide preloaders in UI and so on.
          * @return {jQuery.Deferred}
          */
         sync: function (method, model, options) {
