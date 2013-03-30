@@ -10,8 +10,17 @@ define(
 
             tokenStr = 'Raxacoricofallapatorius';
 
+        $.mockjaxSettings = {
+            contentType: 'text/json',
+            status: 200,
+            responseText: {
+                answer: 42
+            }
+        };
+
+
         var MockModel = Observable.extend({
-                url: '/syncerTest/',
+                url: '/syncerTest',
                 toJSON: function () {
                     return {answer: 42}
                 }
@@ -20,7 +29,7 @@ define(
 
 
         QUnit.module('Skull.Syncer', {
-            setup: function () {  },
+            setup: function () {},
             teardown: function () { $.mockjaxClear(); }
         });
 
@@ -43,7 +52,7 @@ define(
 
              var syncer = new Syncer(passReg);
 
-             $.mockjax({
+            $.mockjax({
                 url: model.url,
                 response: function () {
                     QUnit.equal(this.headers[syncer.params.authHeaderName], tokenStr, 'Correct auth header');

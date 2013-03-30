@@ -544,6 +544,22 @@
      * @extends Backbone.Model
      */
     var Model = Skull.Model = Backbone.Model.extend(/** @lends Skull.Model.prototype */{
+        __registry__: {
+            syncer: 'syncer'
+        },
+
+        /**
+         * Whether model is syncing right now.
+         * @type Boolean
+         */
+        inSync: false,
+
+        /**
+         * Whether model was fetched form the server
+         * @type Boolean
+         */
+        isFetched: false,
+
         /** @constructs */
         constructor: function (attributes, options) {
             this.registry = options.registry;
@@ -559,7 +575,7 @@
          * Almost the same as .set method, but always do it's work silently (i.e. not firing any event).
          * Useful when setting values from UI to prevent «event loop».
          * @param {Object|String} key Either key or properties hash
-         * @param {Object} val Either value or options
+         * @param {Object} [val] Either value or options
          * @param {Object} [options={}] Additional options
          */
         silentSet: function (key, val, options) {
@@ -588,11 +604,16 @@
         /**
          * Wraps any persistent operations so they trigger 'syncStart' and 'syncEnd' events every time.
          * Useful for triggering show/hide preloaders in UI and so on.
+         * @param {String} method 'create', 'read', 'update', 'delete' or 'patch'
+         * @param {Skull.Model} model Link to this
+         * @param {Object} [options={}]
          * @return {jQuery.Deferred}
          */
         sync: function (method, model, options) {
             this.trigger('syncStart');
             this.inSync = true;
+
+            options || (options = {});
 
             var success = options.success,
                 error = options.error,
