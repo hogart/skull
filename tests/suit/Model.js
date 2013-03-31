@@ -3,7 +3,8 @@ define(
         require('mockjax');
 
         var Skull = require('skull'),
-            registry = new Skull.ResourceRegistry,
+            ResourceRegistry = Skull.ResourceRegistry,
+            registry = new ResourceRegistry,
             passReg = {registry: registry},
             Model = Skull.Model;
 
@@ -90,7 +91,7 @@ define(
             model.sync('read', model);
         });
 
-        QUnit.asyncTest('success callback is called on ok response', function (QUnit) {
+        QUnit.asyncTest('`success` callback is called on ok response', function (QUnit) {
             var model = createModel({url: '/onsuccess'});
 
             $.mockjax({
@@ -105,7 +106,7 @@ define(
             });
         });
 
-        QUnit.asyncTest('always callback is called on ok response', function (QUnit) {
+        QUnit.asyncTest('`always` callback is called on ok response', function (QUnit) {
             var model = createModel({url: '/onsuccess/always'});
 
             $.mockjax({
@@ -120,7 +121,7 @@ define(
             });
         });
 
-        QUnit.asyncTest('error callback is called on bad response', function (QUnit) {
+        QUnit.asyncTest('`error` callback is called on bad response', function (QUnit) {
             var model = createModel({url: '/error'});
 
             $.mockjax({
@@ -136,7 +137,7 @@ define(
             });
         });
 
-        QUnit.asyncTest('always callback is called on bad response', function (QUnit) {
+        QUnit.asyncTest('`always` callback is called on bad response', function (QUnit) {
             var model = createModel({url: '/onerror/always'});
 
             $.mockjax({
@@ -149,6 +150,13 @@ define(
                     start();
                 }
             });
+        });
+
+        QUnit.test('Cloned model has registry', function (QUnit) {
+            var model = createModel(),
+                clonedModel = model.clone();
+
+            QUnit.ok(clonedModel.registry, 'Cloned properly');
         });
     }
 );
