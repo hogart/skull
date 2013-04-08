@@ -9,9 +9,8 @@
         '/tests/suit/Template.js',
         '/tests/suit/Syncer.js',
         '/tests/suit/Model.js',
-        '/tests/suit/RestModel.js'
-
-
+        '/tests/suit/RestModel.js',
+        '/tests/suit/Collection.js'
     ];
 
     // Resolve all testModules and then start the Test Runner.

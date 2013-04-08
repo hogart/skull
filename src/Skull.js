@@ -619,29 +619,29 @@
                 error = options.error,
                 always = options.always;
 
-            options.success = _.bind(function (model, resp) {
+            options.success = _.bind(function (response) {
                 this.inSync = false;
                 this.isFetched = true;
 
                 if (success) {
-                    success(model, resp);
+                    success(this, response, options);
                 }
                 if (always) {
-                    always(this);
+                    always(this, response, options);
                 }
 
                 this.trigger('syncEnd', true);
             }, this);
 
-            options.error = _.bind(function (model, xhr, options) {
+            options.error = _.bind(function (response) {
                 this.inSync = false;
                 this.isFetched = true;
 
                 if (error) {
-                    error(this, xhr)
+                    error(this, response, options)
                 }
                 if (always) {
-                    always(this);
+                    always(this, response, options);
                 }
 
                 this.trigger('syncEnd', false);
@@ -740,19 +740,28 @@
 
             options = options ? _.clone(options) : {};
 
-            var success = options.success;
-            options.success = _.bind(function(resp, status, xhr) {
+            var success = options.success,
+                error = options.error,
+                always = options.always;
+
+            options.success = _.bind(function(response) {
                 this.inSync = false;
                 this.isFetched = true;
 
-                this[options.add ? 'add' : 'reset'](this.parse(resp), options);
-                if (success) success(this, resp);
+                this[options.add ? 'add' : 'reset'](this.parse(response), options);
+
+                if (success) {
+                    success(this, response, options);
+                }
+
+                if (always) {
+                    always(this, response, options);
+                }
 
                 this.trigger('syncEnd', true);
-            }, options.scope || this);
+            }, this);
 
-            var error = options.error;
-            options.error = _.bind(function(model, response) {
+            options.error = _.bind(function(response) {
                 this.inSync = false;
                 this.isFetched = true;
 
@@ -760,8 +769,12 @@
                     error(this, response, options);
                 }
 
+                if (always) {
+                    always(this, response, options);
+                }
+
                 this.trigger('syncEnd', false);
-            }, options.scope || this);
+            }, this);
 
             return this.sync('read', this, options);
         },
@@ -785,7 +798,16 @@
         _prepareModel: function (attrs, options) {
             (options || (options = {})).registry = this.registry;
 
-            Collection.__super__._prepareModel.call(this, attrs, options);
+            return Collection.__super__._prepareModel.call(this, attrs, options);
+        },
+
+        /**
+         * Returns a new instance of the collection with an identical list of models.
+         * Takes care of registry passing.
+         * @returns {Skull.Collection}
+         */
+        clone: function () {
+            return new this.constructor(this.models, {registry: this.registry});
         }
     });
 
