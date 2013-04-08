@@ -768,7 +768,7 @@
 
          /**
           * Provides data for templates.
-          * {@link Model#toTemplate}
+          * {@link Skull.Model#toTemplate}
           * @returns {Object[]}
           */
         toTemplate: function () {
