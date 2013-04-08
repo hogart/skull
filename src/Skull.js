@@ -248,7 +248,7 @@
 
         /**
          * Map from CRUD to HTTP for our default syncer implementation.
-         * @private
+         * @protected
          */
         _methodMap: {
             'create': 'POST',
@@ -265,7 +265,7 @@
         },
 
         /**
-         * @private
+         * @protected
          */
         _urlError: function () {
             throw new Error('A "url" property or function must be specified');
@@ -359,7 +359,7 @@
          * Augments request params with authorization header. Feel free to override.
          * @param {Object} params
          * @returns {Object} augmented request params
-         * @private
+         * @protected
          */
         _authorize: function (params) {
             var token = this.getToken ? this.getToken() : false,
@@ -427,7 +427,7 @@
          * Fetches template by name.
          * @param {String} name
          * @returns {jQuery}
-         * @private
+         * @protected
          * @throws {Error} 'No such template'
          */
         _getTemplateNode: function (name) {
@@ -451,7 +451,7 @@
          * Primary templates processing – e.g. whitespace trimming
          * @param {jQuery} node
          * @returns {String}
-         * @private
+         * @protected
          */
         _preprocessTemplate: function (node) {
             var rawTemplate = node.text();
@@ -467,7 +467,7 @@
          * Compiles template to function
          * @param {String} rawTemplate
          * @returns {Function}
-         * @private
+         * @protected
          */
         _compileTemplate: function (rawTemplate) {
             return this.tplFunction(rawTemplate);
@@ -477,7 +477,7 @@
          * Gets compiled template by its name
          * @param {String} name
          * @returns {Function}
-         * @private
+         * @protected
          */
         _getCompiledTemplate: function (name) {
             var node = this._getTemplateNode(name),
@@ -491,7 +491,7 @@
          * Returns either cached compiled template or compiles it, caches and returns it
          * @param {String} name template name
          * @returns {Function} compiled template
-         * @private
+         * @protected
          */
         _getTemplate: function (name) {
             if (this._templates[name] && !this.params.dontCache) {
