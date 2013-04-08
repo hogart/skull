@@ -11,8 +11,8 @@
         '/tests/suit/Model.js',
         '/tests/suit/RestModel.js',
         '/tests/suit/Collection.js',
-        '/tests/suit/RestCollection.js'
-
+        '/tests/suit/RestCollection.js',
+        '/tests/suit/View.js'
     ];
 
     // Resolve all testModules and then start the Test Runner.

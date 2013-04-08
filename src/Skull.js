@@ -388,7 +388,7 @@
      * Skull.Template provides wrapper for template engine (_.template by default).
      * This wrapper performs caching, error handling, bit of debugging info.
      * By default Skull.Template fetches templates stored in `script` tags with 'js-tpl-<templateName>' class.
-     * @class Template
+     * @class Skull.Template
      */
     var Template = Skull.Template = Abstract.extend(/** @lends Skull.Template.prototype */{
         defaults: {
@@ -418,7 +418,7 @@
 
             this.params = _.extend({}, this.defaults, options);
 
-            if (options.tplFunction) {
+            if (options && options.tplFunction) {
                 this.tplFunction = options.tplFunction
             }
         },
