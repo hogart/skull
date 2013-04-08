@@ -816,7 +816,7 @@
      * @class Skull.RestCollection
      * @extends Skull.Collection
      */
-    var RestCollection = Collection.extend(/** @lends Skull.RestCollection.prototype */{
+    var RestCollection = Skull.RestCollection = Collection.extend(/** @lends Skull.RestCollection.prototype */{
         __registry__: {
             syncer: 'syncer',
             getApiUrl: 'getApiUrl'
