@@ -695,7 +695,6 @@
             // generate more readable cid
             this.cid = _.uniqueId('model.' + this.resource);
         }
-
     });
 
     /**

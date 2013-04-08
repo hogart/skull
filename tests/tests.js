@@ -8,7 +8,8 @@
         '/tests/suit/processRegistry.js',
         '/tests/suit/Template.js',
         '/tests/suit/Syncer.js',
-        '/tests/suit/Model.js'
+        '/tests/suit/Model.js',
+        '/tests/suit/RestModel.js'
 
 
     ];
