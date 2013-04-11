@@ -77,6 +77,40 @@ define(
             QUnit.equal(el.html(), '42', 'Calling .toTemplate method');
         });
 
+        QUnit.test('Replaces this.$el, when told so', function (QUnit) {
+            // replace
+            createTemplate('replace', '<div class="js-replacer"></div>');
+
+            var el = $('<div class="js-test1"></div>').appendTo(viewNest);
+
+            var ReplacingView = View.extend({
+                tpl: 'replace',
+                replaceEl: true
+            });
+
+            var rView = new ReplacingView(_.extend({}, passReg, {el: el}));
+            rView.render();
+
+            QUnit.ok(rView.$el.hasClass('js-replacer'), 'Replaced entire element as intended');
+
+
+            // not replace
+            el = $('<div class="js-test2"></div>').appendTo(viewNest);
+            var SimpleView = View.extend({
+                tpl: 'replace',
+                replaceEl: false
+            });
+
+            var sView = new SimpleView(_.extend({}, passReg, {el: el}));
+            sView.render();
+
+            QUnit.ok(sView.$('.js-replacer').length, 'Replaced only content')
+        });
+
+        QUnit.test('Processes __ui__', function (QUnit) {
+
+        });
+
         viewNest.remove();
     }
 );

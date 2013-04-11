@@ -959,6 +959,7 @@
         render: function () {
             var uiState = this.collection || this.model || {};
 
+            // if we haven't yet $el, then we should replace element either way
             this.rr(uiState, this.replaceEl ? this.$el : undefined);
             this.onRender();
 
