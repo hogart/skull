@@ -1143,6 +1143,8 @@
             node: 'html',
             router: Backbone.Router,
             syncer: Skull.Syncer,
+            template: Skull.Template,
+
 
             history: {
                 root: '/'
@@ -1162,8 +1164,9 @@
          * @param {Boolean} [options.autostart=false] Whether application should start right when instantiated
          */
         initialize: function (options) {
-            this.registry = new Skull.ResourceRegistry();
-            var register = _.bind(registry.register, register);
+            var registry = this.registry = new Skull.ResourceRegistry(),
+                register = _.bind(registry.register, registry);
+
             register('app', this);
 
             this.params = _.extend({}, this.defaults, options);
@@ -1184,7 +1187,7 @@
             router.on('all', this.onRoute, this);
 
             // create syncer
-            register('syncer', new this.params.syncer());
+            register('syncer', new this.params.syncer({registry: registry}));
 
             // create template handler
             register('template', new this.params.template());
