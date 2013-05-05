@@ -1205,7 +1205,10 @@
         start: function () {
             this.registry.register(
                 'rootView',
-                new this.params.rootView({el: this.params.node}, {registry: this.registry})
+                new this.params.rootView({
+                    el: this.params.node,
+                    registry: this.registry
+                })
             );
 
             Backbone.history.start(this.params.history);
