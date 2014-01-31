@@ -1226,7 +1226,7 @@
          * Primarily dispatches route change. Feel free to override.
          * @param routeName
          */
-        onRoute: function (routeName) {
+        onRoute: function (routeName, params) {
 			this.currentRoute = [routeName, params];
 			this.trigger('path', routeName, params);
         },
