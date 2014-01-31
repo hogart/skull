@@ -1,10 +1,10 @@
 (function(root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD
-        define(['underscore', 'backbone', 'jquery', 'exports'], function(_, Backbone, $, exports) {
+        define(['_', 'Backbone', '$', 'exports'], function(_, Backbone, $, exports) {
             // Export global even in AMD case in case this script is loaded with
             // others that may still expect a global Skull.
-            root.Skull = factory(root, exports, _, Backbone, $);
+            return factory(root, exports, _, Backbone, $);
         });
     } else {
         // Browser globals
@@ -901,6 +901,9 @@
         initialize: function (options) {
             View.__super__.initialize.call(this.options);
 
+			// save reference to parent view
+			this.parent = options.parent;
+
             // semi-automated child views management. Should be instance property.
             this.children = {};
         },
@@ -1184,7 +1187,6 @@
 
             // create router
             var router = register('router', new this.params.router());
-            router.on('all', this.onRoute, this);
 
             // create syncer
             register('syncer', new this.params.syncer({registry: registry}));
@@ -1203,6 +1205,12 @@
          * Feel free to override.
          */
         start: function () {
+			this.listenTo(
+				Backbone.history,
+				'route',
+				this.onRoute
+			);
+
             this.registry.register(
                 'rootView',
                 new this.params.rootView({
@@ -1219,8 +1227,8 @@
          * @param routeName
          */
         onRoute: function (routeName) {
-            var path = routeName.split(':')[1];
-            this.trigger('path', path, _.chain(arguments).toArray().tail().value());
+			this.currentRoute = [routeName, params];
+			this.trigger('path', routeName, params);
         },
 
         /**
