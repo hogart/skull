@@ -70,7 +70,7 @@
          * Registers object or fabric by given <code>key<code>
          * @param {String} key
          * @param {Object} value
-         * @param {Object} options
+         * @param {Object} [options={}]
          * @return {Object}
          */
         register: function (key, value, options) {
@@ -185,7 +185,7 @@
 
         initialize: function (options) {
             this.params = {};
-            this.set(options)
+            this.set(options);
         },
 
         /**
@@ -230,7 +230,7 @@
         getApiPath: function () {
             if (!this.cachedUrl) {
                 var parts = _.compact([this.params.prefix, this.params.type, this.params.version]);
-                this.cachedUrl = '/' + parts.join('/') + '/';
+                this.cachedUrl = parts.length ? ('/' + parts.join('/') + '/') : '/';
             }
 
             return this.cachedUrl;
@@ -609,7 +609,7 @@
          * @param {Object} [options={}]
          * @return {jQuery.Deferred}
          */
-        sync: function (method, model, options) {
+        fetch: function (options) {
             this.trigger('syncStart');
             this.inSync = true;
 
@@ -647,6 +647,14 @@
                 this.trigger('syncEnd', false);
             }, this);
 
+            return this.sync('read', this, options);
+        },
+
+        /**
+         * Delegates sync operations to this.syncer
+         * @return {jQuery.Deferred}
+         */
+        sync: function (method, model, options) {
             return this.syncer.sync(method, model, options);
         },
 
@@ -901,8 +909,8 @@
         initialize: function (options) {
             View.__super__.initialize.call(this.options);
 
-			// save reference to parent view
-			this.parent = options.parent;
+            // save reference to parent view
+            this.parent = options.parent;
 
             // semi-automated child views management. Should be instance property.
             this.children = {};
@@ -1167,12 +1175,13 @@
          * @param {Boolean} [options.autostart=false] Whether application should start right when instantiated
          */
         initialize: function (options) {
-            var registry = this.registry = new Skull.ResourceRegistry(),
-                register = _.bind(registry.register, registry);
+            this.params = _.extend({}, this.defaults, options);
+
+            var registry = this.registry = this.params.registry || new Skull.ResourceRegistry(),
+                register = _.bind(registry.register, registry),
+                regComp = this._registerComponent.bind(this);
 
             register('app', this);
-
-            this.params = _.extend({}, this.defaults, options);
 
             // determine if we're in debug mode
             register('debug', this._isDebug(this.params));
@@ -1186,17 +1195,41 @@
             register('getApiUrl', _.bind(urlProvider.getApiUrl, urlProvider));
 
             // create router
-            var router = register('router', new this.params.router());
+            regComp('syncer');
 
             // create syncer
-            register('syncer', new this.params.syncer({registry: registry}));
+            regComp('router');
 
             // create template handler
-            register('template', new this.params.template());
-
+            regComp('template');
 
             // start app, if we should
             this.params.autostart && this.start();
+        },
+
+        /**
+         * Creates application component and registers it, following config
+         * @param {String} componentName should be present in params passed to application
+         * @returns {Object} instance of component
+         * @protected
+         */
+        _registerComponent: function (componentName) {
+            var component = this.params[componentName];
+
+            if (_.isFunction(component)) {
+                return this.registry.register(componentName, new component({registry: this.registry}))
+            } else {
+                var constructor = component[0],
+                    params = component[1];
+
+                if (_.isFunction(params)) {
+                    params = params.call(this);
+                }
+
+                params.registry = this.registry;
+
+                return this.registry.register(componentName, new constructor(params));
+            }
         },
 
         /**
@@ -1205,11 +1238,11 @@
          * Feel free to override.
          */
         start: function () {
-			this.listenTo(
-				Backbone.history,
-				'route',
-				this.onRoute
-			);
+            this.listenTo(
+                Backbone.history,
+                'route',
+                this.onRoute
+            );
 
             this.registry.register(
                 'rootView',
@@ -1227,8 +1260,8 @@
          * @param routeName
          */
         onRoute: function (routeName, params) {
-			this.currentRoute = [routeName, params];
-			this.trigger('path', routeName, params);
+            this.currentRoute = [routeName, params];
+            this.trigger('path', routeName, params);
         },
 
         /**
