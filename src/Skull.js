@@ -12,6 +12,7 @@
             );
         });
     } else if (typeof exports === 'object') {
+        // Node-like CommonJS require system
         module.exports = factory(
             root,
             exports,
@@ -62,7 +63,7 @@
 		 * @param {Object} options
 		 */
         initialize: function (options) {
-			if (options.registry) {
+			if (options && options.registry) {
 				this.registry = options.registry;
 
 				if (_.result(this, '__registry__')) {
@@ -710,7 +711,7 @@
                     if (attrs.hasOwnProperty(_attrStr)) {
                         this._setAttr(
                             newAttrs,
-                            Skul.Model.attrPath(_attrStr),
+                            Skull.Model.attrPath(_attrStr),
                             options.unset ? void 0 : attrs[_attrStr],
                             options
                         );
