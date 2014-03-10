@@ -2,13 +2,32 @@
     if (typeof define === 'function' && define.amd) {
         // AMD
         define(['_', 'Backbone', '$', 'exports'], function(_, Backbone, $, exports) {
-            // Export global even in AMD case in case this script is loaded with
-            // others that may still expect a global Skull.
-            return factory(root, exports, _, Backbone, $);
+            // AMD. Register as an anonymous module.
+            return factory(
+                root,
+                exports,
+                _,
+                Backbone,
+                $
+            );
         });
+    } else if (typeof exports === 'object') {
+        module.exports = factory(
+            root,
+            exports,
+            require('underscore'),
+            require('Backbone'),
+            require('jquery')
+        );
     } else {
         // Browser globals
-        root.Skull = factory(root, {}, root._, root.Backbone, (root.jQuery || root.Zepto));
+        root.Skull = factory(
+            root,
+            {},
+            root._,
+            root.Backbone,
+            (root.jQuery || root.Zepto)
+        );
   }
 }(this, function (root, Skull, _, Backbone, $) {
     'use strict';
