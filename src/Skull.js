@@ -31,6 +31,7 @@
 
     /**
      * Abstract class that can be extended in Backbone way.
+	 * Also works with {@link Skull.ResourceRegistry} if it was passed as `registry` in first argument, utilizing {@link Skull.processRegistry}
      * @class Skull.Abstract
      */
     var Abstract = Skull.Abstract = function () {
@@ -38,7 +39,35 @@
     };
 
     Abstract.prototype = {
-        initialize: function () {}
+		/**
+		 * @param {Object} options
+		 */
+        initialize: function (options) {
+			if (options.registry) {
+				this.registry = options.registry;
+
+				if (_.result(this, '__registry__')) {
+					processRegistry(this);
+				}
+			}
+		},
+
+		/**
+		 * Much like a {@link _.result}, but ascending to parent
+		 * @param {Function} cls class derived in usual Skull paradigm (i.e. with `__super__` property pointing to parent's prototype)
+		 * @param {String} propertyName
+		 * @returns {*}
+		 * @protected
+		 */
+		_parentResult: function (cls, propertyName) {
+			var parentProp = cls.__super__[propertyName];
+
+			if (_.isFunction(parentProp)) {
+				return parentProp.call(this);
+			} else {
+				return parentProp;
+			}
+		}
     };
 
     Abstract.extend = Backbone.Model.extend;
@@ -108,7 +137,7 @@
                         create = fabric[0],
                         params = _.extend({}, fabric[1], options);
 
-                    return create(params)
+                    return create(params);
                 } else {
                     return this._storage[key];
                 }
@@ -667,7 +696,13 @@
             var tplData = _.clone(this.attributes);
 
             return tplData;
-        }
+        },
+
+		/**
+		 * @type Function
+		 * {@link Skull.Abstract#_parentResult}
+		 */
+		_parentResult: Abstract.prototype._parentResult
     });
 
     /**
@@ -816,7 +851,13 @@
          */
         clone: function () {
             return new this.constructor(this.models, {registry: this.registry});
-        }
+        },
+
+		/**
+		 * @type Function
+		 * {@link Skull.Abstract#_parentResult}
+		 */
+		_parentResult: Abstract.prototype._parentResult
     });
 
     /**
@@ -1132,7 +1173,13 @@
         remove: function () {
             this.onBeforeRemove();
             View.__super__.remove.call(this);
-        }
+        },
+
+		/**
+		 * @type Function
+		 * {@link Skull.Abstract#_parentResult}
+		 */
+		_parentResult: Abstract.prototype._parentResult
     });
 
     /**
