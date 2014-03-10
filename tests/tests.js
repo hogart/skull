@@ -1,18 +1,18 @@
 (function () {
     var testModules = [
-        '/tests/suit/UrlProvider.js',
-        '/tests/suit/detectDomain.js',
-        '/tests/suit/Abstract.js',
-        '/tests/suit/Observable.js',
-        '/tests/suit/ResourceRegistry.js',
-        '/tests/suit/processRegistry.js',
-        '/tests/suit/Template.js',
-        '/tests/suit/Syncer.js',
-        '/tests/suit/Model.js',
-        '/tests/suit/RestModel.js',
-        '/tests/suit/Collection.js',
-        '/tests/suit/RestCollection.js',
-        '/tests/suit/View.js'
+        './suit/UrlProvider.js',
+        './suit/detectDomain.js',
+        './suit/Abstract.js',
+        './suit/Observable.js',
+        './suit/ResourceRegistry.js',
+        './suit/processRegistry.js',
+        './suit/Template.js',
+        './suit/Syncer.js',
+        './suit/Model.js',
+        './suit/RestModel.js',
+        './suit/Collection.js',
+        './suit/RestCollection.js',
+        './suit/View.js'
     ];
 
     // Resolve all testModules and then start the Test Runner.
