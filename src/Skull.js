@@ -537,9 +537,13 @@
         }
     });
 
+    var _delayedTriggers = [],
+        nestedChanges;
+
     /**
      * Skull.Model is basic model with few enhancements:
-     * registry handling, `silentSet` method and `syncStart` and `syncEnd` events
+     * registry handling
+     * nested attributes support
      * @class Skull.Model
      * @extends Backbone.Model
      */
@@ -547,18 +551,6 @@
         __registry__: {
             syncer: 'syncer'
         },
-
-        /**
-         * Whether model is syncing right now.
-         * @type Boolean
-         */
-        inSync: false,
-
-        /**
-         * Whether model was fetched form the server
-         * @type Boolean
-         */
-        isFetched: false,
 
         /** @constructs */
         constructor: function (attributes, options) {
@@ -602,55 +594,6 @@
         },
 
         /**
-         * Wraps any persistent operations so they trigger 'syncStart' and 'syncEnd' events every time.
-         * Useful for triggering show/hide preloaders in UI and so on.
-         * @param {String} method 'create', 'read', 'update', 'delete' or 'patch'
-         * @param {Skull.Model} model Link to this
-         * @param {Object} [options={}]
-         * @return {jQuery.Deferred}
-         */
-        fetch: function (options) {
-            this.trigger('syncStart');
-            this.inSync = true;
-
-            options || (options = {});
-
-            var success = options.success,
-                error = options.error,
-                always = options.always;
-
-            options.success = _.bind(function (response) {
-                this.inSync = false;
-                this.isFetched = true;
-
-                if (success) {
-                    success(this, response, options);
-                }
-                if (always) {
-                    always(this, response, options);
-                }
-
-                this.trigger('syncEnd', true);
-            }, this);
-
-            options.error = _.bind(function (response) {
-                this.inSync = false;
-                this.isFetched = true;
-
-                if (error) {
-                    error(this, response, options)
-                }
-                if (always) {
-                    always(this, response, options);
-                }
-
-                this.trigger('syncEnd', false);
-            }, this);
-
-            return this.sync('read', this, options);
-        },
-
-        /**
          * Delegates sync operations to this.syncer
          * @return {jQuery.Deferred}
          */
@@ -664,9 +607,295 @@
          * @returns {Object}
          */
         toTemplate: function () {
-            var tplData = _.clone(this.attributes);
+            var tplData = Skull.Model.deepClone(this.attributes);
 
             return tplData;
+        },
+
+        // nested attributes support credit goes to http://afeld.github.io/backbone-nested/
+
+        /**
+         * Returns attribute value by path
+         * @param {String|Array} attrPath
+         * @returns {Object}
+         */
+        'get': function (attrPath) {
+            var attrPath = Skull.Model.attrPath(attrPath),
+                result;
+
+            Skull.Model.walkPath(this.attributes, attrPath, function (val, path) {
+                var attr = _.last(path);
+                if (path.length === attrPath.length) { // attribute found
+                    result = val[attr];
+                }
+            });
+
+            return result;
+        },
+
+        has: function (attr) {
+            var result = this.get(attr);
+            return !(result === null || _.isUndefined(result));
+        },
+
+        'set': function (key, value, options) {
+            var newAttrs = Skull.Model.deepClone(this.attributes),
+                attrPath,
+                unsetObj,
+                validated;
+
+            if (_.isString(key)) {
+                // Backbone 0.9.0+ syntax: `model.set(key, val)` - convert the key to an attribute path
+                attrPath = Skull.Model.attrPath(key);
+            } else if (_.isArray(key)) {
+                // attribute path
+                attrPath = key;
+            }
+
+            if (attrPath) {
+                options = options || {};
+                this._setAttr(newAttrs, attrPath, value, options);
+            } else { // it's an Object
+                options = value || {};
+                var attrs = key;
+                for (var _attrStr in attrs) {
+                    if (attrs.hasOwnProperty(_attrStr)) {
+                        this._setAttr(
+                            newAttrs,
+                            Skul.Model.attrPath(_attrStr),
+                            options.unset ? void 0 : attrs[_attrStr],
+                            options
+                        );
+                    }
+                }
+            }
+
+            nestedChanges = Skull.Model.__super__.changedAttributes.call(this);
+
+            if (options.unset && attrPath && attrPath.length === 1) { // assume it is a singular attribute being unset
+                // unsetting top-level attribute
+                unsetObj = {};
+                unsetObj[key] = void 0;
+                nestedChanges = _.omit(nestedChanges, _.keys(unsetObj));
+                validated = Skull.Model.__super__.set.call(this, unsetObj, options);
+            } else {
+                unsetObj = newAttrs;
+
+                // normal set(), or an unset of nested attribute
+                if (options.unset && attrPath) {
+                    // make sure Backbone.Model won't unset the top-level attribute
+                    options = _.extend({}, options);
+                    delete options.unset;
+                } else if (options.unset && _.isObject(key)) {
+                    unsetObj = key;
+                }
+                nestedChanges = _.omit(nestedChanges, _.keys(unsetObj));
+                validated = Skull.Model.__super__.set.call(this, unsetObj, options);
+            }
+
+            if (!validated) {
+                // reset changed attributes
+                this.changed = {};
+                nestedChanges = {};
+                return false;
+            }
+
+            this._runDelayedTriggers();
+            return this;
+        },
+
+        add: function(attrStr, value, opts){
+            var current = this.get(attrStr);
+            if (!_.isArray(current)) throw new Error('current value is not an array');
+            return this.set(attrStr + '[' + current.length + ']', value, opts);
+        },
+
+        remove: function (attrStr, opts) {
+            opts = opts || {};
+
+            var attrPath = Skull.Model.attrPath(attrStr),
+                aryPath = _.initial(attrPath),
+                val = this.get(aryPath),
+                i = _.last(attrPath);
+
+            if (!_.isArray(val)) {
+                throw new Error("remove() must be called on a nested array");
+            }
+
+            // only trigger if an element is actually being removed
+            var trigger = !opts.silent && (val.length >= i + 1),
+                oldEl = val[i];
+
+            // remove the element from the array
+            val.splice(i, 1);
+            opts.silent = true; // Triggers should only be fired in trigger section below
+            this.set(aryPath, val, opts);
+
+            if (trigger) {
+                attrStr = Skull.Model.createAttrStr(aryPath);
+                this.trigger('remove:' + attrStr, this, oldEl);
+                for (var aryCount = aryPath.length; aryCount >= 1; aryCount--) {
+                    attrStr = Skull.Model.createAttrStr(_.first(aryPath, aryCount));
+                    this.trigger('change:' + attrStr, this, oldEl);
+                }
+                this.trigger('change', this, oldEl);
+            }
+
+            return this;
+        },
+
+        _delayedTrigger: function(/* the trigger args */){
+            _delayedTriggers.push(arguments);
+        },
+
+        _delayedChange: function (attrStr, newVal, options) {
+            this._delayedTrigger('change:' + attrStr, this, newVal, options);
+
+            // Check if `change` even *exists*, as it won't when the model is freshly created.
+            if (!this.changed) {
+                this.changed = {};
+            }
+
+            this.changed[attrStr] = newVal;
+        },
+
+        _runDelayedTriggers: function () {
+            while (_delayedTriggers.length > 0){
+                this.trigger.apply(this, _delayedTriggers.shift());
+            }
+        },
+
+        _setAttr: function (newAttrs, attrPath, newValue, options) {
+            options = options || {};
+
+            var fullPathLength = attrPath.length,
+                model = this;
+
+            Skull.Model.walkPath(newAttrs, attrPath, function (val, path, next) {
+                var attr = _.last(path),
+                    attrStr = Skull.Model.createAttrStr(path),
+                    isNewValue = !_.isEqual(val[attr], newValue); // See if this is a new value being set
+
+                if (path.length === fullPathLength) { // reached the attribute to be set
+                    if (options.unset) {
+                        delete val[attr]; // unset the value
+
+                        // Trigger `remove` event if array being set to null
+                        if (_.isArray(val)) {
+                            var parentPath = Skull.Model.createAttrStr(_.initial(attrPath));
+                            model._delayedTrigger('remove:' + parentPath, model, val[attr]);
+                        }
+                    } else { // Set the new value
+                        val[attr] = newValue;
+                    }
+
+                    // Trigger `change` event if new values are being set
+                    if (!options.silent && _.isObject(newValue) && isNewValue) {
+                        var visited = [];
+                        var checkChanges = function (obj, prefix) {
+                            // Don't choke on circular references
+                            if (_.indexOf(visited, obj) > -1) {
+                                return;
+                            } else {
+                                visited.push(obj);
+                            }
+
+                            var nestedAttr,
+                                nestedVal;
+
+                            for (var a in obj) {
+                                if (obj.hasOwnProperty(a)) {
+                                    nestedAttr = prefix + '.' + a;
+                                    nestedVal = obj[a];
+                                    if (!_.isEqual(model.get(nestedAttr), nestedVal)) {
+                                        model._delayedChange(nestedAttr, nestedVal, options);
+                                    }
+                                    if (_.isObject(nestedVal)) {
+                                        checkChanges(nestedVal, nestedAttr);
+                                    }
+                                }
+                            }
+                        };
+
+                        checkChanges(newValue, attrStr);
+                    }
+
+                } else if (!val[attr]) {
+                    if (_.isNumber(next)) {
+                        val[attr] = [];
+                    } else {
+                        val[attr] = {};
+                    }
+                }
+
+                if (!options.silent) {
+                    // let the superclass handle change events for top-level attributes
+                    if (path.length > 1 && isNewValue) {
+                        model._delayedChange(attrStr, val[attr], options);
+                    }
+
+                    if (_.isArray(val[attr])) {
+                        model._delayedTrigger('add:' + attrStr, model, val[attr]);
+                    }
+                }
+            });
+        },
+
+        changedAttributes: function (diff) {
+            var backboneChanged = Skull.Model.__super__.changedAttributes.call(this, diff);
+            if (_.isObject(backboneChanged)) {
+                return _.extend({}, nestedChanges, backboneChanged);
+            }
+            return false;
+        },
+
+        toJSON: function () {
+            return Skull.Model.deepClone(this.attributes);
+        }
+    }, {
+        walkPath: function (obj, attrPath, callback, scope) {
+            var val = obj,
+                childAttr;
+
+            // walk through the child attributes
+            for (var i = 0; i < attrPath.length; i++) {
+                callback.call(scope || this, val, attrPath.slice(0, i + 1), attrPath[i + 1]);
+
+                childAttr = attrPath[i];
+                val = val[childAttr];
+                if (!val) {
+                    break;
+                } // at the leaf
+            }
+        },
+
+        createAttrStr: function (attrPath) {
+            var attrStr = attrPath[0];
+            _.each(_.rest(attrPath), function (attr) {
+                attrStr += _.isNumber(attr) ? ('[' + attr + ']') : ('.' + attr);
+            });
+
+            return attrStr;
+        },
+
+        deepClone: function(obj){
+            return $.extend(true, {}, obj);
+        },
+
+        attrPath: function (attrStrOrPath) {
+            var path;
+
+            if (_.isString(attrStrOrPath)) {
+                // TODO this parsing can probably be more efficient
+                path = (attrStrOrPath === '') ? [''] : attrStrOrPath.match(/[^\.\[\]]+/g);
+                path = _.map(path, function (val) {
+                    return val.match(/^\d+$/) ? parseInt(val, 10) : val; // convert array accessors to numbers
+                });
+            } else {
+                path = attrStrOrPath;
+            }
+
+            return path;
         }
     });
 
