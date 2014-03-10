@@ -31,6 +31,7 @@
 
     /**
      * Abstract class that can be extended in Backbone way.
+	 * Also works with {@link Skull.ResourceRegistry} if it was passed as `registry` in first argument, utilizing {@link Skull.processRegistry}
      * @class Skull.Abstract
      */
     var Abstract = Skull.Abstract = function () {
@@ -38,7 +39,35 @@
     };
 
     Abstract.prototype = {
-        initialize: function () {}
+		/**
+		 * @param {Object} options
+		 */
+        initialize: function (options) {
+			if (options.registry) {
+				this.registry = options.registry;
+
+				if (_.result(this, '__registry__')) {
+					processRegistry(this);
+				}
+			}
+		},
+
+		/**
+		 * Much like a {@link _.result}, but ascending to parent
+		 * @param {Function} cls class derived in usual Skull paradigm (i.e. with `__super__` property pointing to parent's prototype)
+		 * @param {String} propertyName
+		 * @returns {*}
+		 * @protected
+		 */
+		_parentResult: function (cls, propertyName) {
+			var parentProp = cls.__super__[propertyName];
+
+			if (_.isFunction(parentProp)) {
+				return parentProp.call(this);
+			} else {
+				return parentProp;
+			}
+		}
     };
 
     Abstract.extend = Backbone.Model.extend;
@@ -108,7 +137,7 @@
                         create = fabric[0],
                         params = _.extend({}, fabric[1], options);
 
-                    return create(params)
+                    return create(params);
                 } else {
                     return this._storage[key];
                 }
@@ -851,7 +880,13 @@
 
         toJSON: function () {
             return Skull.Model.deepClone(this.attributes);
-        }
+        },
+
+        /**
+         * @type Function
+         * {@link Skull.Abstract#_parentResult}
+         */
+        _parentResult: Abstract.prototype._parentResult
     }, {
         walkPath: function (obj, attrPath, callback, scope) {
             var val = obj,
@@ -878,7 +913,7 @@
             return attrStr;
         },
 
-        deepClone: function(obj){
+        deepClone: function(obj) {
             return $.extend(true, {}, obj);
         },
 
@@ -966,57 +1001,6 @@
         },
 
          /**
-          * Wraps any persistent operations so they trigger 'syncStart' and 'syncEnd' events every time.
-          * Useful for triggering show/hide preloaders in UI and so on
-          * @param options
-          * @returns {jQuery.Deferred}
-          */
-        fetch: function (options) {
-            this.inSync = true;
-            this.trigger('syncStart');
-
-            options = options ? _.clone(options) : {};
-
-            var success = options.success,
-                error = options.error,
-                always = options.always;
-
-            options.success = _.bind(function(response) {
-                this.inSync = false;
-                this.isFetched = true;
-
-                this[options.add ? 'add' : 'reset'](this.parse(response), options);
-
-                if (success) {
-                    success(this, response, options);
-                }
-
-                if (always) {
-                    always(this, response, options);
-                }
-
-                this.trigger('syncEnd', true);
-            }, this);
-
-            options.error = _.bind(function(response) {
-                this.inSync = false;
-                this.isFetched = true;
-
-                if (error) {
-                    error(this, response, options);
-                }
-
-                if (always) {
-                    always(this, response, options);
-                }
-
-                this.trigger('syncEnd', false);
-            }, this);
-
-            return this.sync('read', this, options);
-        },
-
-         /**
           * Provides data for templates.
           * {@link Skull.Model#toTemplate}
           * @returns {Object[]}
@@ -1045,7 +1029,13 @@
          */
         clone: function () {
             return new this.constructor(this.models, {registry: this.registry});
-        }
+        },
+
+		/**
+		 * @type Function
+		 * {@link Skull.Abstract#_parentResult}
+		 */
+		_parentResult: Abstract.prototype._parentResult
     });
 
     /**
@@ -1361,7 +1351,13 @@
         remove: function () {
             this.onBeforeRemove();
             View.__super__.remove.call(this);
-        }
+        },
+
+		/**
+		 * @type Function
+		 * {@link Skull.Abstract#_parentResult}
+		 */
+		_parentResult: Abstract.prototype._parentResult
     });
 
     /**
