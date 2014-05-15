@@ -440,6 +440,10 @@
      * @class Skull.Template
      */
     var Template = Skull.Template = Abstract.extend(/** @lends Skull.Template.prototype */{
+        __registry__: {
+            debug: 'debug'
+        },
+
         defaults: {
             selectorPrefix: 'script.js-tpl-',
             trim: true,
@@ -453,11 +457,12 @@
          * @param {Object} options
          * @param {String} [options.selectorPrefix='script.js-tpl-'] default selector for finding template nodes
          * @param {Boolean} [options.trim=true] trim whitespaces from template before compiling
-         * @param {Boolean} [options.debug=false] provide debugging info in rendered templates and to console
          * @param {Boolean} [options.dontCache=false] Useful when developing, you can change template right on page without reloading it
-         * @param {Function} [options.tplFunction=_.template] Template function must accept template string and return compiled to function template
+         * @param {Function} [options.tplFunction=_.template] Template function must accept template string and return compiled to function template. Another (and preferable) way to change this is to inherit and override.
          */
         initialize: function (options) {
+            Template.__super__.initialize.call(this, options);
+
             /**
              * Holds all compiled templates.
              * Instance property.
@@ -468,7 +473,7 @@
             this.params = _.extend({}, this.defaults, options);
 
             if (options && options.tplFunction) {
-                this.tplFunction = options.tplFunction
+                this.tplFunction = options.tplFunction;
             }
         },
 
