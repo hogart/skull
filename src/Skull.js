@@ -1,14 +1,15 @@
 (function(root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD
-        define(['underscore', 'backbone', 'jquery', 'exports'], function(_, Backbone, $, exports) {
+        define(['underscore', 'jquery', 'backbone', 'exports'], function(_, $, Backbone, exports) {
+            console.log(arguments);
             // AMD. Register as an anonymous module.
             return factory(
                 root,
                 exports,
                 _,
-                Backbone,
-                $
+                $,
+                Backbone
             );
         });
     } else if (typeof exports === 'object') {
@@ -17,8 +18,8 @@
             root,
             exports,
             require('underscore'),
-            require('backbone'),
-            require('jquery')
+            require('jquery'),
+            require('backbone')
         );
     } else {
         // Browser globals
@@ -26,11 +27,11 @@
             root,
             {},
             root._,
-            root.Backbone,
-            (root.jQuery || root.Zepto || root.ender || root.$)
+            (root.jQuery || root.Zepto || root.ender || root.$),
+            root.Backbone
         );
   }
-}(this, function (root, Skull, _, Backbone, $) {
+}(this, function (root, Skull, _, $, Backbone) {
     'use strict';
 
     /**
@@ -51,7 +52,7 @@
 
     /**
      * Abstract class that can be extended in Backbone way.
-	 * Also works with {@link Skull.ResourceRegistry} if it was passed as `registry` in first argument, utilizing {@link Skull.processRegistry}
+     * Also works with {@link Skull.ResourceRegistry} if it was passed as `registry` in first argument, utilizing {@link Skull.processRegistry}
      * @class Skull.Abstract
      */
     var Abstract = Skull.Abstract = function () {
@@ -59,35 +60,35 @@
     };
 
     Abstract.prototype = {
-		/**
-		 * @param {Object} options
-		 */
+        /**
+         * @param {Object} options
+         */
         initialize: function (options) {
-			if (options && options.registry) {
-				this.registry = options.registry;
+            if (options && options.registry) {
+                this.registry = options.registry;
 
-				if (_.result(this, '__registry__')) {
-					processRegistry(this);
-				}
-			}
-		},
+                if (_.result(this, '__registry__')) {
+                    processRegistry(this);
+                }
+            }
+        },
 
-		/**
-		 * Much like a {@link _.result}, but ascending to parent
-		 * @param {Function} cls class derived in usual Skull paradigm (i.e. with `__super__` property pointing to parent's prototype)
-		 * @param {String} propertyName
-		 * @returns {*}
-		 * @protected
-		 */
-		_parentResult: function (cls, propertyName) {
-			var parentProp = cls.__super__[propertyName];
+        /**
+         * Much like a {@link _.result}, but ascending to parent
+         * @param {Function} cls class derived in usual Skull paradigm (i.e. with `__super__` property pointing to parent's prototype)
+         * @param {String} propertyName
+         * @returns {*}
+         * @protected
+         */
+        _parentResult: function (cls, propertyName) {
+            var parentProp = cls.__super__[propertyName];
 
-			if (_.isFunction(parentProp)) {
-				return parentProp.call(this);
-			} else {
-				return parentProp;
-			}
-		}
+            if (_.isFunction(parentProp)) {
+                return parentProp.call(this);
+            } else {
+                return parentProp;
+            }
+        }
     };
 
     Abstract.extend = Backbone.Model.extend;
@@ -1056,11 +1057,11 @@
             return new this.constructor(this.models, {registry: this.registry});
         },
 
-		/**
-		 * @type Function
-		 * {@link Skull.Abstract#_parentResult}
-		 */
-		_parentResult: Abstract.prototype._parentResult
+        /**
+         * @type Function
+         * {@link Skull.Abstract#_parentResult}
+         */
+        _parentResult: Abstract.prototype._parentResult
     });
 
     /**
@@ -1378,11 +1379,11 @@
             View.__super__.remove.call(this);
         },
 
-		/**
-		 * @type Function
-		 * {@link Skull.Abstract#_parentResult}
-		 */
-		_parentResult: Abstract.prototype._parentResult
+        /**
+         * @type Function
+         * {@link Skull.Abstract#_parentResult}
+         */
+        _parentResult: Abstract.prototype._parentResult
     });
 
     /**
