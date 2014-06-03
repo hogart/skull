@@ -6,7 +6,7 @@ define(
             option = {answer: 42};
 
         registry.register('answer', 42);
-        registry.register('fabric', function (val) { return val }, option)
+        registry.register('fabric', function (val) { return val }, option);
 
 
         QUnit.module('Skull.processRegistry', {

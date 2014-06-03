@@ -2,12 +2,11 @@ var require = {
 //    baseUrl: '/',
 //    urlArgs: "bust=" +  (new Date()).getTime(),
     paths: {
-        lib: '../lib',
-        jquery: '../lib/jquery',
+        jquery: '../lib/jquery/dist/jquery',
         skull: '../src/Skull',
         mockjax: '../lib/jquery.mockjax',
-        Backbone: '../lib/backbone',
-        underscore: '../lib/underscore',
+        backbone: '../lib/backbone/backbone',
+        underscore: '../lib/underscore/underscore',
         _: '../lib/underscore'
     },
 

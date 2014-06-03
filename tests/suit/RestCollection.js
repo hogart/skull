@@ -23,7 +23,7 @@ define(
                 function () {
                     new CustomFailCollection({}, passReg)
                 },
-                'Throws exception, when no `resource` field present'
+                'Throws exception when no `resource` field present'
             );
 
             var CustomModel = RestModel.extend({

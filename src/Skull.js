@@ -1,7 +1,7 @@
 (function(root, factory) {
     if (typeof define === 'function' && define.amd) {
         // AMD
-        define(['_', 'Backbone', '$', 'exports'], function(_, Backbone, $, exports) {
+        define(['underscore', 'backbone', 'jquery', 'exports'], function(_, Backbone, $, exports) {
             // AMD. Register as an anonymous module.
             return factory(
                 root,
@@ -17,7 +17,7 @@
             root,
             exports,
             require('underscore'),
-            require('Backbone'),
+            require('backbone'),
             require('jquery')
         );
     } else {
@@ -27,7 +27,7 @@
             {},
             root._,
             root.Backbone,
-            (root.jQuery || root.Zepto)
+            (root.jQuery || root.Zepto || root.ender || root.$)
         );
   }
 }(this, function (root, Skull, _, Backbone, $) {
