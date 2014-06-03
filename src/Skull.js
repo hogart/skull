@@ -2,7 +2,6 @@
     if (typeof define === 'function' && define.amd) {
         // AMD
         define(['underscore', 'jquery', 'backbone', 'exports'], function(_, $, Backbone, exports) {
-            console.log(arguments);
             // AMD. Register as an anonymous module.
             return factory(
                 root,
