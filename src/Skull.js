@@ -54,11 +54,11 @@
      * Also works with {@link Skull.ResourceRegistry} if it was passed as `registry` in first argument, utilizing {@link Skull.processRegistry}
      * @class Skull.Abstract
      */
-    var Abstract = Skull.Abstract = function () {
+    Skull.Abstract = function () {
         this.initialize.apply(this, arguments);
     };
 
-    Abstract.prototype = {
+    Skull.Abstract.prototype = {
         /**
          * @param {Object} options
          */
@@ -67,7 +67,7 @@
                 this.registry = options.registry;
 
                 if (_.result(this, '__registry__')) {
-                    processRegistry(this);
+                    Skull.processRegistry(this);
                 }
             }
         },
@@ -90,7 +90,7 @@
         }
     };
 
-    Abstract.extend = Backbone.Model.extend;
+    Skull.Abstract.extend = Backbone.Model.extend;
 
     /**
      * Class for creating object which can listen and trigger events.
@@ -98,7 +98,7 @@
      * @class Skull.Observable
      * @extends Skull.Abstract
      */
-    var Observable = Skull.Observable = Abstract.extend(Backbone.Events);
+    Skull.Observable = Skull.Abstract.extend(Backbone.Events);
 
     /**
      * Simple implementation of Registry pattern
@@ -106,7 +106,7 @@
      * @extends Skull.Abstract
      * @constructor
      */
-    var ResourceRegistry = Skull.ResourceRegistry = Skull.Abstract.extend(/** @lends Skull.ResourceRegistry.prototype */{
+    Skull.ResourceRegistry = Skull.Abstract.extend(/** @lends Skull.ResourceRegistry.prototype */{
         initialize: function () {
             /** @private */
             this._storage = {};
@@ -171,7 +171,7 @@
      * Iterates over context.__registry__, acquiring dependencies from it via context.registry.acquire
      * @type {Function}
      */
-    var processRegistry = Skull.processRegistry = function (context) {
+    Skull.processRegistry = function (context) {
         var items = _.result(context, '__registry__'),
             registry = context.registry,
             requirement;
@@ -189,7 +189,7 @@
      * @param {String} [attributeName='data-api-domain'] Definitive attribute name
      * @type {Function}
      */
-    var detectDomain = Skull.detectDomain = function (attributeName) {
+    Skull.detectDomain = function (attributeName) {
         attributeName = attributeName || 'data-api-domain';
 
         var script = $('script[' + attributeName + ']');
@@ -222,7 +222,7 @@
      * //my.api.example.com/restEndpoint/clients/1.0.0/. This is completely valid URL.
      * @class Skull.UrlProvider
      */
-    var UrlProvider = Skull.UrlProvider = Abstract.extend(/** @lends Skull.UrlProvider.prototype */{
+    Skull.UrlProvider = Skull.Abstract.extend(/** @lends Skull.UrlProvider.prototype */{
         defaults: {
             version: '',
             type: '',
@@ -290,7 +290,7 @@
      * Backbone.sync OOP-style
      * Can emit auhorized requests, when provided with getToken function via registry
      */
-    var Syncer = Skull.Syncer = Skull.Abstract.extend(/** @lends Skull.Syncer.prototype */{
+    Skull.Syncer = Skull.Abstract.extend(/** @lends Skull.Syncer.prototype */{
         __registry__: {
             getToken: 'getToken'
         },
@@ -330,7 +330,7 @@
          */
         initialize: function (options) {
             this.registry = options.registry;
-            processRegistry(this);
+            Skull.processRegistry(this);
 
             this.params = _.extend({}, this.defaults, options);
         },
@@ -439,7 +439,7 @@
      * By default Skull.Template fetches templates stored in `script` tags with 'js-tpl-<templateName>' class.
      * @class Skull.Template
      */
-    var Template = Skull.Template = Abstract.extend(/** @lends Skull.Template.prototype */{
+    Skull.Template = Skull.Abstract.extend(/** @lends Skull.Template.prototype */{
         __registry__: {
             debug: 'debug'
         },
@@ -461,7 +461,7 @@
          * @param {Function} [options.tplFunction=_.template] Template function must accept template string and return compiled to function template. Another (and preferable) way to change this is to inherit and override.
          */
         initialize: function (options) {
-            Template.__super__.initialize.call(this, options);
+            Skull.Template.__super__.initialize.call(this, options);
 
             /**
              * Holds all compiled templates.
@@ -489,7 +489,7 @@
                 node = $(fullSelector);
 
             if (!node.length) {
-                throw new Error('No such template: "' + name + '". Make sure you have "' + fullSelector + '" node on your page')
+                throw new Error('No such template: "' + name + '". Make sure you have "' + fullSelector + '" node on your page');
             } else if (node.length > 1) {
                 node = node.eq(0);
 
@@ -511,10 +511,10 @@
             var rawTemplate = node.text();
 
             if (this.params.trim) {
-                rawTemplate = $.trim(rawTemplate)
+                rawTemplate = $.trim(rawTemplate);
             }
 
-            return rawTemplate
+            return rawTemplate;
         },
 
         /**
@@ -591,512 +591,529 @@
         }
     });
 
-    var _delayedTriggers = [],
-        nestedChanges;
+    /**
+     * Extends given model class with all Skull.Model qualities. Useful when you need to use other models,
+     * e.g. http://afeld.github.io/backbone-nested/, but still want DI and registry.
+     * @param {Function} baseModelClass
+     * @returns {constructor}
+     */
+    Skull.extendModel = function (baseModelClass) {
+        var Model = baseModelClass.extend(/** @lends Skull.Model.prototype */{
+            __registry__: function () {
+                var registry = {
+                    syncer: 'syncer'
+                };
+
+                if (this.resource) {
+                    registry.getApiUrl = 'getApiUrl';
+                }
+
+                return registry;
+            },
+
+            url: function () {
+                if (this.resource) { // REST model
+                    var url = this.getApiUrl() + this.resource + '/';
+
+                    if (this.id) {
+                        url += encodeURIComponent(this.id) + '/';
+                    }
+
+                    return url;
+                } else { // conventional model
+                    return this._parentResult(Model, 'url');
+                }
+            },
+
+            /** @constructs */
+            constructor: function (attributes, options) {
+                this.registry = options.registry;
+                Skull.processRegistry(this);
+
+                Model.__super__.constructor.call(this, attributes, options);
+
+                // more readable cid
+                if (this.resource) { // REST model
+                    this.cid = _.uniqueId('model.' + this.resource);
+                } else {
+                    this.cid = _.uniqueId('model');
+                }
+            },
+
+            /**
+             * Almost the same as .set method, but always do it's work silently (i.e. not firing any event).
+             * Useful when setting values from UI to prevent «event loop».
+             * @param {Object|String} key Either key or properties hash
+             * @param {Object} [val] Either value or options
+             * @param {Object} [options={}] Additional options
+             */
+            silentSet: function (key, val, options) {
+                var attrs;
+
+                // Handle both `"key", value` and `{key: value}` -style arguments.
+                if (_.isObject(key)) {
+                    attrs = key;
+                    options = val;
+                } else {
+                    (attrs = {})[key] = val;
+                }
+
+                (options || (options = {})).silent = true;
+                return this.set(attrs, options);
+            },
+
+            /**
+             * Overridden for registry handling
+             * @returns {Skull.Model}
+             */
+            clone: function () {
+                return new this.constructor(this.attributes, {registry: this.registry});
+            },
+
+            /**
+             * Delegates sync operations to this.syncer
+             * @return {jQuery.Deferred}
+             */
+            sync: function (method, model, options) {
+                return this.syncer.sync(method, model, options);
+            },
+
+            /**
+             * toTemplate is reserved for generating data for rendering,
+             * e.g. for computed values and so on. Feel free to override.
+             * @returns {Object}
+             */
+            toTemplate: function () {
+                var tplData = _.clone(this.attributes);
+
+                return tplData;
+            },
+
+            /**
+             * @type Function
+             * {@link Skull.Abstract#_parentResult}
+             */
+            _parentResult: Skull.Abstract.prototype._parentResult
+        });
+
+        return Model;
+    };
 
     /**
      * Skull.Model is basic model with few enhancements:
-     * registry handling
-     * nested attributes support
+     * # registry handling
+     * # meaningful cid
+     * # easier REST urls generation (when `resource` field provided)
      * @class Skull.Model
      * @extends Backbone.Model
      */
-    var Model = Skull.Model = Backbone.Model.extend(/** @lends Skull.Model.prototype */{
-        __registry__: {
-            syncer: 'syncer'
-        },
+    Skull.Model = Skull.extendModel(Backbone.Model);
 
-        /** @constructs */
-        constructor: function (attributes, options) {
-            this.registry = options.registry;
-            processRegistry(this);
-
-            Model.__super__.constructor.call(this, attributes, options);
-
-            // more readable cid
-            this.cid = _.uniqueId('model');
-        },
-
-        /**
-         * Almost the same as .set method, but always do it's work silently (i.e. not firing any event).
-         * Useful when setting values from UI to prevent «event loop».
-         * @param {Object|String} key Either key or properties hash
-         * @param {Object} [val] Either value or options
-         * @param {Object} [options={}] Additional options
-         */
-        silentSet: function (key, val, options) {
-            var attrs;
-
-            // Handle both `"key", value` and `{key: value}` -style arguments.
-            if (_.isObject(key)) {
-                attrs = key;
-                options = val;
-            } else {
-                (attrs = {})[key] = val;
-            }
-
-            (options || (options = {})).silent = true;
-            return this.set(attrs, options);
-        },
-
-        /**
-         * Overridden for registry handling
-         * @returns {Skull.Model}
-         */
-        clone: function () {
-            return new this.constructor(this.attributes, {registry: this.registry});
-        },
-
-        /**
-         * Delegates sync operations to this.syncer
-         * @return {jQuery.Deferred}
-         */
-        sync: function (method, model, options) {
-            return this.syncer.sync(method, model, options);
-        },
-
-        /**
-         * toTemplate is reserved for generating data for rendering,
-         * e.g. for computed values and so on. Feel free to override.
-         * @returns {Object}
-         */
-        toTemplate: function () {
-            var tplData = Skull.Model.deepClone(this.attributes);
-
-            return tplData;
-        },
-
-        // nested attributes support credit goes to http://afeld.github.io/backbone-nested/
-
-        /**
-         * Returns attribute value by path
-         * @param {String|Array} attrPath
-         * @returns {Object}
-         */
-        'get': function (attrPath) {
-            var attrPath = Skull.Model.attrPath(attrPath),
-                result;
-
-            Skull.Model.walkPath(this.attributes, attrPath, function (val, path) {
-                var attr = _.last(path);
-                if (path.length === attrPath.length) { // attribute found
-                    result = val[attr];
-                }
-            });
-
-            return result;
-        },
-
-        has: function (attr) {
-            var result = this.get(attr);
-            return !(result === null || _.isUndefined(result));
-        },
-
-        'set': function (key, value, options) {
-            var newAttrs = Skull.Model.deepClone(this.attributes),
-                attrPath,
-                unsetObj,
-                validated;
-
-            if (_.isString(key)) {
-                // Backbone 0.9.0+ syntax: `model.set(key, val)` - convert the key to an attribute path
-                attrPath = Skull.Model.attrPath(key);
-            } else if (_.isArray(key)) {
-                // attribute path
-                attrPath = key;
-            }
-
-            if (attrPath) {
-                options = options || {};
-                this._setAttr(newAttrs, attrPath, value, options);
-            } else { // it's an Object
-                options = value || {};
-                var attrs = key;
-                for (var _attrStr in attrs) {
-                    if (attrs.hasOwnProperty(_attrStr)) {
-                        this._setAttr(
-                            newAttrs,
-                            Skull.Model.attrPath(_attrStr),
-                            options.unset ? void 0 : attrs[_attrStr],
-                            options
-                        );
-                    }
-                }
-            }
-
-            nestedChanges = Skull.Model.__super__.changedAttributes.call(this);
-
-            if (options.unset && attrPath && attrPath.length === 1) { // assume it is a singular attribute being unset
-                // unsetting top-level attribute
-                unsetObj = {};
-                unsetObj[key] = void 0;
-                nestedChanges = _.omit(nestedChanges, _.keys(unsetObj));
-                validated = Skull.Model.__super__.set.call(this, unsetObj, options);
-            } else {
-                unsetObj = newAttrs;
-
-                // normal set(), or an unset of nested attribute
-                if (options.unset && attrPath) {
-                    // make sure Backbone.Model won't unset the top-level attribute
-                    options = _.extend({}, options);
-                    delete options.unset;
-                } else if (options.unset && _.isObject(key)) {
-                    unsetObj = key;
-                }
-                nestedChanges = _.omit(nestedChanges, _.keys(unsetObj));
-                validated = Skull.Model.__super__.set.call(this, unsetObj, options);
-            }
-
-            if (!validated) {
-                // reset changed attributes
-                this.changed = {};
-                nestedChanges = {};
-                return false;
-            }
-
-            this._runDelayedTriggers();
-            return this;
-        },
-
-        add: function(attrStr, value, opts){
-            var current = this.get(attrStr);
-            if (!_.isArray(current)) throw new Error('current value is not an array');
-            return this.set(attrStr + '[' + current.length + ']', value, opts);
-        },
-
-        remove: function (attrStr, opts) {
-            opts = opts || {};
-
-            var attrPath = Skull.Model.attrPath(attrStr),
-                aryPath = _.initial(attrPath),
-                val = this.get(aryPath),
-                i = _.last(attrPath);
-
-            if (!_.isArray(val)) {
-                throw new Error("remove() must be called on a nested array");
-            }
-
-            // only trigger if an element is actually being removed
-            var trigger = !opts.silent && (val.length >= i + 1),
-                oldEl = val[i];
-
-            // remove the element from the array
-            val.splice(i, 1);
-            opts.silent = true; // Triggers should only be fired in trigger section below
-            this.set(aryPath, val, opts);
-
-            if (trigger) {
-                attrStr = Skull.Model.createAttrStr(aryPath);
-                this.trigger('remove:' + attrStr, this, oldEl);
-                for (var aryCount = aryPath.length; aryCount >= 1; aryCount--) {
-                    attrStr = Skull.Model.createAttrStr(_.first(aryPath, aryCount));
-                    this.trigger('change:' + attrStr, this, oldEl);
-                }
-                this.trigger('change', this, oldEl);
-            }
-
-            return this;
-        },
-
-        _delayedTrigger: function(/* the trigger args */){
-            _delayedTriggers.push(arguments);
-        },
-
-        _delayedChange: function (attrStr, newVal, options) {
-            this._delayedTrigger('change:' + attrStr, this, newVal, options);
-
-            // Check if `change` even *exists*, as it won't when the model is freshly created.
-            if (!this.changed) {
-                this.changed = {};
-            }
-
-            this.changed[attrStr] = newVal;
-        },
-
-        _runDelayedTriggers: function () {
-            while (_delayedTriggers.length > 0){
-                this.trigger.apply(this, _delayedTriggers.shift());
-            }
-        },
-
-        _setAttr: function (newAttrs, attrPath, newValue, options) {
-            options = options || {};
-
-            var fullPathLength = attrPath.length,
-                model = this;
-
-            Skull.Model.walkPath(newAttrs, attrPath, function (val, path, next) {
-                var attr = _.last(path),
-                    attrStr = Skull.Model.createAttrStr(path),
-                    isNewValue = !_.isEqual(val[attr], newValue); // See if this is a new value being set
-
-                if (path.length === fullPathLength) { // reached the attribute to be set
-                    if (options.unset) {
-                        delete val[attr]; // unset the value
-
-                        // Trigger `remove` event if array being set to null
-                        if (_.isArray(val)) {
-                            var parentPath = Skull.Model.createAttrStr(_.initial(attrPath));
-                            model._delayedTrigger('remove:' + parentPath, model, val[attr]);
-                        }
-                    } else { // Set the new value
-                        val[attr] = newValue;
-                    }
-
-                    // Trigger `change` event if new values are being set
-                    if (!options.silent && _.isObject(newValue) && isNewValue) {
-                        var visited = [];
-                        var checkChanges = function (obj, prefix) {
-                            // Don't choke on circular references
-                            if (_.indexOf(visited, obj) > -1) {
-                                return;
-                            } else {
-                                visited.push(obj);
-                            }
-
-                            var nestedAttr,
-                                nestedVal;
-
-                            for (var a in obj) {
-                                if (obj.hasOwnProperty(a)) {
-                                    nestedAttr = prefix + '.' + a;
-                                    nestedVal = obj[a];
-                                    if (!_.isEqual(model.get(nestedAttr), nestedVal)) {
-                                        model._delayedChange(nestedAttr, nestedVal, options);
-                                    }
-                                    if (_.isObject(nestedVal)) {
-                                        checkChanges(nestedVal, nestedAttr);
-                                    }
-                                }
-                            }
-                        };
-
-                        checkChanges(newValue, attrStr);
-                    }
-
-                } else if (!val[attr]) {
-                    if (_.isNumber(next)) {
-                        val[attr] = [];
-                    } else {
-                        val[attr] = {};
-                    }
-                }
-
-                if (!options.silent) {
-                    // let the superclass handle change events for top-level attributes
-                    if (path.length > 1 && isNewValue) {
-                        model._delayedChange(attrStr, val[attr], options);
-                    }
-
-                    if (_.isArray(val[attr])) {
-                        model._delayedTrigger('add:' + attrStr, model, val[attr]);
-                    }
-                }
-            });
-        },
-
-        changedAttributes: function (diff) {
-            var backboneChanged = Skull.Model.__super__.changedAttributes.call(this, diff);
-            if (_.isObject(backboneChanged)) {
-                return _.extend({}, nestedChanges, backboneChanged);
-            }
-            return false;
-        },
-
-        toJSON: function () {
-            return Skull.Model.deepClone(this.attributes);
-        },
-
-        /**
-         * @type Function
-         * {@link Skull.Abstract#_parentResult}
-         */
-        _parentResult: Abstract.prototype._parentResult
-    }, {
-        walkPath: function (obj, attrPath, callback, scope) {
-            var val = obj,
-                childAttr;
-
-            // walk through the child attributes
-            for (var i = 0; i < attrPath.length; i++) {
-                callback.call(scope || this, val, attrPath.slice(0, i + 1), attrPath[i + 1]);
-
-                childAttr = attrPath[i];
-                val = val[childAttr];
-                if (!val) {
-                    break;
-                } // at the leaf
-            }
-        },
-
-        createAttrStr: function (attrPath) {
-            var attrStr = attrPath[0];
-            _.each(_.rest(attrPath), function (attr) {
-                attrStr += _.isNumber(attr) ? ('[' + attr + ']') : ('.' + attr);
-            });
-
-            return attrStr;
-        },
-
-        deepClone: function(obj) {
-            return $.extend(true, {}, obj);
-        },
-
-        attrPath: function (attrStrOrPath) {
-            var path;
-
-            if (_.isString(attrStrOrPath)) {
-                // TODO this parsing can probably be more efficient
-                path = (attrStrOrPath === '') ? [''] : attrStrOrPath.match(/[^\.\[\]]+/g);
-                path = _.map(path, function (val) {
-                    return val.match(/^\d+$/) ? parseInt(val, 10) : val; // convert array accessors to numbers
-                });
-            } else {
-                path = attrStrOrPath;
-            }
-
-            return path;
-        }
-    });
 
     /**
-     * Skull.RestModel is Model more suitable for REST, with reasonable defaults
-     * @class Skull.RestModel
-     * @extends Skull.Model
+     * Extends given collection class with all Skull.Collection qualities. Useful when you need to use other collections,
+     * but still need DI, registry and other stuff.
+     * @param {Function} baseCollectionClass
+     * @param {Function} [modelClass=SkullModel]
+     * @returns {constructor}
      */
-    var RestModel = Skull.RestModel = Model.extend(/** @lends Skull.RestModel.prototype */{
-        __registry__: {
-            syncer: 'syncer',
-            getApiUrl: 'getApiUrl'
-        },
+    Skull.extendCollection = function (baseCollectionClass, modelClass) {
+        modelClass = modelClass || Skull.Model;
 
-        url: function () {
-            var url = this.getApiUrl() + this.resource + '/';
+        var Collection = baseCollectionClass.extend(/** @lends Skull.Collection.prototype */{
+            __registry__: function () {
+                var registry = {
+                    syncer: 'syncer'
+                };
 
-            if (this.id) {
-                url += encodeURIComponent(this.id) + '/';
-            }
+                if (this.resource) {
+                    registry.getApiUrl = 'getApiUrl';
+                }
 
-            return url;
-        },
+                return registry;
+            },
 
-        /** @constructs */
-        constructor: function (attributes, options) {
-            RestModel.__super__.constructor.call(this, attributes, options);
+            url: function () {
+                if (this.resource) {
+                    var url = this.getApiUrl();
+                    url += this.resource + '/';
 
-            // make sure we have resource
-            if (!this.resource) {
-                throw new Error('Missing "resource" field');
-            }
+                    return url;
+                } else {
+                    return this._parentResult(Collection, 'url');
+                }
+            },
 
-            // generate more readable cid
-            this.cid = _.uniqueId('model.' + this.resource);
-        }
-    });
+            model: modelClass,
+
+            /** @constructs */
+            constructor: function (models, options) {
+                this.resource = this.model.prototype.resource;
+
+                this.registry = options.registry;
+                Skull.processRegistry(this);
+
+                Collection.__super__.constructor.call(this, models, options);
+
+                // more readable cid
+                if (this.resource) { // REST collection
+                    this.cid = _.uniqueId('collection.' + this.resource);
+                } else {
+                    this.cid = _.uniqueId('collection');
+                }
+            },
+
+            /**
+             * Delegates sync operations to this.syncer
+             * @return {jQuery.Deferred}
+             */
+            sync: function (method, model, options) {
+                return this.syncer.sync(method, model, options);
+            },
+
+            /**
+             * Provides data for templates.
+             * {@link Skull.Model#toTemplate}
+             * @returns {Object[]}
+             */
+            toTemplate: function () {
+                return _.invoke(this.models, 'toTemplate')
+            },
+
+            /**
+             * Prepare a hash of attributes (or other model) to be added to this collection.
+             * Takes care of registry passing.
+             * @param {Object} attrs future model attrs
+             * @param {Object} [options={}]
+             * @private
+             */
+            _prepareModel: function (attrs, options) {
+                (options || (options = {})).registry = this.registry;
+
+                return Collection.__super__._prepareModel.call(this, attrs, options);
+            },
+
+            /**
+             * Returns a new instance of the collection with an identical list of models.
+             * Takes care of registry passing.
+             * @returns {Skull.Collection}
+             */
+            clone: function () {
+                return new this.constructor(this.models, {registry: this.registry});
+            },
+
+            /**
+             * @type Function
+             * {@link Skull.Abstract#_parentResult}
+             */
+            _parentResult: Skull.Abstract.prototype._parentResult
+        });
+
+        return Collection;
+    };
 
     /**
-     * Skull.Collection is basic model with few enhancements:
-     * registry handling, syncStart and syncEnd events
+     * Skull.Collection is a collection with few enhancements:
+     * # registry handling
+     * # meaningful cid
+     * # easier REST urls generation
      * @class Skull.Collection
      * @extends Backbone.Collection
      */
-    var Collection = Skull.Collection = Backbone.Collection.extend(/** @lends Skull.Collection.prototype */{
-        __registry__: {
-            syncer: 'syncer'
-        },
+    Skull.Collection = Skull.extendCollection(Backbone.Collection);
 
-        model: Model,
-
-        /** @constructs */
-        constructor: function (models, options) {
-            this.registry = options.registry;
-            processRegistry(this);
-
-            Collection.__super__.constructor.call(this, models, options);
-
-            this.cid = _.uniqueId('collection');
-        },
-
-        /**
-         * Delegates sync operations to this.syncer
-         * @return {jQuery.Deferred}
-         */
-        sync: function (method, model, options) {
-            return this.syncer.sync(method, model, options);
-        },
-
-         /**
-          * Provides data for templates.
-          * {@link Skull.Model#toTemplate}
-          * @returns {Object[]}
-          */
-        toTemplate: function () {
-            return _.invoke(this.models, 'toTemplate')
-        },
-
-        /**
-         * Prepare a hash of attributes (or other model) to be added to this collection.
-         * Takes care of registry passing.
-         * @param {Object} attrs future model attrs
-         * @param {Object} [options={}]
-         * @private
-         */
-        _prepareModel: function (attrs, options) {
-            (options || (options = {})).registry = this.registry;
-
-            return Collection.__super__._prepareModel.call(this, attrs, options);
-        },
-
-        /**
-         * Returns a new instance of the collection with an identical list of models.
-         * Takes care of registry passing.
-         * @returns {Skull.Collection}
-         */
-        clone: function () {
-            return new this.constructor(this.models, {registry: this.registry});
-        },
-
-        /**
-         * @type Function
-         * {@link Skull.Abstract#_parentResult}
-         */
-        _parentResult: Abstract.prototype._parentResult
-    });
 
     /**
-     * Skull.RestCollection is Collection more suitable for REST, with reasonable defaults
-     * @class Skull.RestCollection
-     * @extends Skull.Collection
+     * Extends given view class with all Skull.View goodness.
+     * @param {Function} baseViewClass
+     * @returns {constructor}
      */
-    var RestCollection = Skull.RestCollection = Collection.extend(/** @lends Skull.RestCollection.prototype */{
-        __registry__: {
-            syncer: 'syncer',
-            getApiUrl: 'getApiUrl'
-        },
+    Skull.extendView = function (baseViewClass) {
+        var View = baseViewClass.extend(/** @lends Skull.View.prototype */{
+            __registry__: {
+                template: 'template'
+            },
 
-        model: RestModel,
+            // Whether this.$el will be completely replaced on rendering
+            replaceEl: false,
 
-        url: function () {
-            var url = this.getApiUrl();
-            url += this.resource + '/';
+            /**
+             * Automatically (and not, if you wish) creates and renders nested views.
+             * Actually is a hash. Each field can take 4 forms:
+             * # '.js-someSelector': MyViewClass
+             * # '.js-anotherSelector': [MyViewClass, {answer: 42}] // second element will be passed to MyViewClass constructor
+             * # '.js-yetAnotherSelector': [MyViewClass, 'someMethodName'] // this['someMethodName'] will be called in proper context (`this`),
+             *   and result will be passed to MyViewClass constructor
+             * # '.js-selectorToo': [MyViewClass, function () { return {answer: 42} }] // second element will be called in proper context,
+             *   and result will be passed to MyViewClass constructor
+             *
+             * All mentioned views will be placed to `this.children` hash for further managing during {@link Skull.View#onRender}.
+             *
+             * @type {Object}
+             */
+            __children__: null,
 
-            return url;
-        },
+            /**
+             * Automatically (and not, if you wish) creates links to nodes inside your view. This is useful (and handy),
+             * when you change some node's attributes several times during view's lifecycle.
+             * Actually is a config in following form:
+             * somePrettyName: '.some .selector'
+             *
+             * All defined bits will be placed to `this.ui` hash for further managing during {@link Skull.View#onRender}.
+             */
+            __ui__: null,
 
-        /** @constructs */
-        constructor: function (models, options) {
-            // make sure we have resource
-            if (!this.model.prototype.resource) {
-                throw new Error('Missing "resource" field');
-            } else {
-                this.resource = this.model.prototype.resource;
-            }
+            /**
+             * @constructs
+             * @param {Object} options
+             */
+            constructor: function (options) {
+                this.registry = options.registry;
+                Skull.processRegistry(this);
 
-            RestCollection.__super__.constructor.call(this, models, options);
+                View.__super__.constructor.call(this, options);
 
-            this.cid = _.uniqueId('collection.' + this.resource);
-        }
-    });
+                // more readable cid
+                this.cid = _.uniqueId('view');
+            },
+
+            initialize: function (options) {
+                View.__super__.initialize.call(this.options);
+
+                // save reference to parent view
+                this.parent = options.parent;
+
+                // semi-automated child views management. Should be instance property.
+                this.children = {};
+            },
+
+            /**
+             * Shortcut for rendering this.tpl to this.$el (or instead of this element)
+             * @param {Skull.Model|Skull.Collection|Object} [tplData={}] if this parameter have .toTemplate method,
+             * it would be called and result will be passed instead
+             * @param {Boolean} [replace=false] whether replace whole $el or only replace it's .html()
+             */
+            rr: function (tplData, replace) {
+                // work out parameters
+                var data = {},
+                    replaceEl = false;
+                if (arguments.length == 2) {
+                    data = tplData;
+                    replaceEl = replace;
+                } else if (arguments.length == 1) {
+                    if (_.isBoolean(arguments[0])) {
+                        replaceEl = arguments[0]
+                    } else {
+                        data = arguments[0]
+                    }
+                }
+
+
+                // get data
+                if (data && 'toTemplate' in data && _.isFunction(data.toTemplate)) {
+                    data = data.toTemplate();
+                }
+
+                // get template
+                var tpl = _.result(this, 'tpl');
+
+                if (!tpl) {
+                    throw new Error('"tpl" property not found while attaching view "' + this.cid + '" to "' + this.$el.selector + '"');
+                }
+
+                // rendering at last
+                var rendered = this.template.tmpl(tpl, data);
+
+                if (replaceEl) {
+                    var $rendered = $(rendered);
+                    this.$el.replaceWith($rendered);
+                    this.setElement($rendered);
+                } else {
+                    this.$el.html(rendered);
+                }
+            },
+
+            /**
+             * Default rendering procedure: renders this.collection or this.model or {}.
+             * Feel free to override if needed.
+             * @return data passed to template
+             */
+            render: function () {
+                var uiState = this.collection || this.model || {};
+
+                // if we haven't yet $el, then we should replace element either way
+                this.rr(uiState, this.replaceEl ? this.$el : undefined);
+                this.onRender();
+
+                return uiState;
+            },
+
+            /**
+             * Performs declarative bindings: __children__, __ui__, events
+             * Call this method when html is ready.
+             */
+            onRender: function () {
+                this._ensureUI();
+
+                this._ensureSubviews();
+
+                this.delegateEvents();
+            },
+
+            _ensureUI: function (ui) {
+                ui || (ui = _.result(this, '__ui__'));
+
+                if (!ui) {
+                    return; // nothing to do here anymore
+                }
+
+                this.ui = {};
+
+                _.each(ui, function (selector, name) {
+                    this.ui[name] = this.$(selector);
+                }, this);
+            },
+
+            _ensureSubviews: function (children, options) {
+                children || (children = _.result(this, '__children__'));
+
+                if (!children) {
+                    return; // nothing to do here anymore
+                }
+
+                var renderView = function (viewClass, selector) {
+                    this._renderView(viewClass, selector, options);
+                };
+
+                _.each(children, renderView, this)
+            },
+
+            _renderView: function (viewClass, selector, options) {
+                var params = {
+                    el: selector
+                };
+
+                this.model && (params.model = this.model);
+                this.collection && (params.collection = this.collection);
+
+                params.viewName = selector;
+                if (options) {
+                    params = _.extend({}, params, options);
+                }
+
+                if (_.isArray(viewClass) && viewClass.length > 1) {
+                    params.viewName = viewClass[1].viewName ? viewClass[1].viewName : params.viewName;
+                }
+
+                this.registerChild(params.viewName, viewClass, params);
+            },
+
+            /**
+             * Registers nested view
+             * @param {String|Boolean} viewName
+             * @param {View} viewClass
+             * @param {Object} options
+             * @return {View}
+             */
+            registerChild: function (viewName, viewClass, options) {
+                var params = _.extend(
+                    {
+                        parent: this,
+                        registry: this.registry
+                    },
+                    options
+                );
+
+                if (_.isArray(viewClass)) {
+                    if (viewClass.length > 1) {
+                        if (_.isFunction(viewClass[1])) {
+                            params = _.extend(viewClass[1].call(this), params);
+                        } else if (_.isString(viewClass[1])) {
+                            if (!(viewClass[1] in this)) {
+                                throw new TypeError('Method "' + viewClass[1] + '" does not exist');
+                            }
+                            params = _.extend(this[viewClass[1]].call(this), params);
+                        } else {
+                            params = _.extend(viewClass[1], params);
+                        }
+
+                    }
+                    viewClass = viewClass[0];
+                }
+
+                if (_.isString(params.el)) {
+                    params.el = this.$(params.el);
+                }
+
+                if (!viewClass) {
+                    throw 'Invalid class when registering child: ' + viewName;
+                }
+
+                var child = new viewClass(params);
+                if (!viewName) {
+                    viewName = child.cid;
+                    child.viewName = viewName;
+                } else {
+                    child.cid = viewName;
+                }
+
+                this.children[viewName] = child;
+
+                return child;
+            },
+
+            /**
+             * Carefully removes nested view
+             * @param {String} viewName
+             */
+            unregisterChild: function (viewName) {
+                if (!this.children[viewName]) {
+                    return;
+                }
+
+                this.children[viewName].remove();
+                delete this.children[viewName];
+            },
+
+            /**
+             * Carefully removes *all* nested views
+             * @private
+             */
+            _unregisterChildren: function () {
+                _.each(this.children, function (child, childName) {
+                    this.unregisterChild(childName);
+                }, this);
+            },
+
+            /**
+             * Cleans up: removes nested views, shuts down events both DOM and Backbone's
+             */
+            onBeforeRemove: function () {
+                this._unregisterChildren();
+
+                this.undelegateEvents();
+                this.$el.off();
+
+                this.off();
+            },
+
+            /**
+             * @destructor
+             */
+            remove: function () {
+                this.onBeforeRemove();
+                View.__super__.remove.call(this);
+            },
+
+            /**
+             * @type Function
+             * {@link Skull.Abstract#_parentResult}
+             */
+            _parentResult: Skull.Abstract.prototype._parentResult
+        });
+
+        return View;
+    };
 
     /**
      * Fused with automagic, Skull.View is highly configurable tool for creating and manipulating your app's views.
@@ -1106,284 +1123,7 @@
      * # Preventing memory leaks and "zombie" callbacks with more thorough {@link Skull.View#remove} method
      * @class {Skull.View}
      */
-    var View = Skull.View = Backbone.View.extend(/** @lends Skull.View.prototype */{
-        __registry__: {
-            template: 'template'
-        },
-
-        // Whether this.$el will be completely replaced on rendering
-        replaceEl: false,
-
-        /**
-         * Automatically (and not, if you wish) creates and renders nested views.
-         * Actually is a hash. Each field can take 4 forms:
-         * # '.js-someSelector': MyViewClass
-         * # '.js-anotherSelector': [MyViewClass, {answer: 42}] // second element will be passed to MyViewClass constructor
-         * # '.js-yetAnotherSelector': [MyViewClass, 'someMethodName'] // this['someMethodName'] will be called in proper context (`this`),
-         *   and result will be passed to MyViewClass constructor
-         * # '.js-selectorToo': [MyViewClass, function () { return {answer: 42} }] // second element will be called in proper context,
-         *   and result will be passed to MyViewClass constructor
-         *
-         * All mentioned views will be placed to `this.children` hash for further managing during {@link Skull.View#onRender}.
-         *
-         * @type {Object}
-         */
-        __children__: null,
-
-        /**
-         * Automatically (and not, if you wish) creates links to nodes inside your view. This is useful (and handy),
-         * when you change some node's attributes several times during view's lifecycle.
-         * Actually is a config in following form:
-         * somePrettyName: '.some .selector'
-         *
-         * All defined bits will be placed to `this.ui` hash for further managing during {@link Skull.View#onRender}.
-         */
-        __ui__: null,
-
-        constructor: function (options) {
-            this.registry = options.registry;
-            processRegistry(this);
-
-            View.__super__.constructor.call(this, options);
-
-            // more readable cid
-            this.cid = _.uniqueId('view');
-        },
-
-        initialize: function (options) {
-            View.__super__.initialize.call(this.options);
-
-            // save reference to parent view
-            this.parent = options.parent;
-
-            // semi-automated child views management. Should be instance property.
-            this.children = {};
-        },
-
-        /**
-         * Shortcut for rendering this.tpl to this.$el (or instead of this element)
-         * @param {Skull.Model|Skull.Collection|Object} [tplData={}] if this parameter have .toTemplate method,
-         * it would be called and result will be passed instead
-         * @param {Boolean} [replace=false] whether replace whole $el or only replace it's .html()
-         */
-        rr: function (tplData, replace) {
-            // work out parameters
-            var data = {},
-                replaceEl = false;
-            if (arguments.length == 2) {
-                data = tplData;
-                replaceEl = replace;
-            } else if (arguments.length == 1) {
-                if (_.isBoolean(arguments[0])) {
-                    replaceEl = arguments[0]
-                } else {
-                    data = arguments[0]
-                }
-            }
-
-
-            // get data
-            if (data && 'toTemplate' in data && _.isFunction(data.toTemplate)) {
-                data = data.toTemplate();
-            }
-
-            // get template
-            var tpl = _.result(this, 'tpl');
-
-            if (!tpl) {
-                throw new Error('"tpl" property not found while attaching view "' + this.cid + '" to "' + this.$el.selector + '"');
-            }
-
-            // rendering at last
-            var rendered = this.template.tmpl(tpl, data);
-
-            if (replaceEl) {
-                var $rendered = $(rendered);
-                this.$el.replaceWith($rendered);
-                this.setElement($rendered);
-            } else {
-                this.$el.html(rendered);
-            }
-        },
-
-        /**
-         * Default rendering procedure: renders this.collection or this.model or {}.
-         * Feel free to override if needed.
-         * @return data passed to template
-         */
-        render: function () {
-            var uiState = this.collection || this.model || {};
-
-            // if we haven't yet $el, then we should replace element either way
-            this.rr(uiState, this.replaceEl ? this.$el : undefined);
-            this.onRender();
-
-            return uiState;
-        },
-
-        /**
-         * Performs declarative bindings: __children__, __ui__, events
-         * Call this method when html is ready.
-         */
-        onRender: function () {
-            this._ensureUI();
-
-            this._ensureSubviews();
-
-            this.delegateEvents();
-        },
-
-        _ensureUI: function (ui) {
-            ui || (ui = _.result(this, '__ui__'));
-
-            if (!ui) {
-                return; // nothing to do here anymore
-            }
-
-            this.ui = {};
-
-            _.each(ui, function (selector, name) {
-                this.ui[name] = this.$(selector);
-            }, this);
-        },
-
-        _ensureSubviews: function (children, options) {
-            children || (children = _.result(this, '__children__'));
-
-            if (!children) {
-                return; // nothing to do here anymore
-            }
-
-            var renderView = function (viewClass, selector) {
-                this._renderView(viewClass, selector, options);
-            };
-
-            _.each(children, renderView, this)
-        },
-
-        _renderView: function (viewClass, selector, options) {
-            var params = {
-                el: selector
-            };
-
-            this.model && (params.model = this.model);
-            this.collection && (params.collection = this.collection);
-
-            params.viewName = selector;
-            if (options) {
-                params = _.extend({}, params, options);
-            }
-
-            if (_.isArray(viewClass) && viewClass.length > 1) {
-                params.viewName = viewClass[1].viewName ? viewClass[1].viewName : params.viewName;
-            }
-
-            this.registerChild(params.viewName, viewClass, params);
-        },
-
-        /**
-         * Registers nested view
-         * @param {String|Boolean} viewName
-         * @param {View} viewClass
-         * @param {Object} options
-         * @return {View}
-         */
-        registerChild: function (viewName, viewClass, options) {
-            var params = _.extend(
-                {
-                    parent: this,
-                    registry: this.registry
-                },
-                options
-            );
-
-            if (_.isArray(viewClass)) {
-                if (viewClass.length > 1) {
-                    if (_.isFunction(viewClass[1])) {
-                        params = _.extend(viewClass[1].call(this), params);
-                    } else if (_.isString(viewClass[1])) {
-                        if (!(viewClass[1] in this)) {
-                            throw new TypeError('Method "' + viewClass[1] + '" does not exist');
-                        }
-                        params = _.extend(this[viewClass[1]].call(this), params);
-                    } else {
-                        params = _.extend(viewClass[1], params);
-                    }
-
-                }
-                viewClass = viewClass[0];
-            }
-
-            if (_.isString(params.el)) {
-                params.el = this.$(params.el);
-            }
-
-            if (!viewClass) {
-                throw 'Invalid class when registering child: ' + viewName;
-            }
-
-            var child = new viewClass(params);
-            if (!viewName) {
-                viewName = child.cid;
-                child.viewName = viewName;
-            } else {
-                child.cid = viewName;
-            }
-
-            this.children[viewName] = child;
-
-            return child;
-        },
-
-        /**
-         * Carefully removes nested view
-         * @param {String} viewName
-         */
-        unregisterChild: function (viewName) {
-            if (!this.children[viewName]) {
-                return;
-            }
-
-            this.children[viewName].remove();
-            delete this.children[viewName];
-        },
-
-        /**
-         * Carefully removes *all* nested views
-         * @private
-         */
-        _unregisterChildren: function () {
-            _.each(this.children, function (child, childName) {
-                this.unregisterChild(childName);
-            }, this);
-        },
-
-        /**
-         * Cleans up: removes nested views, shuts down events both DOM and Backbone's
-         */
-        onBeforeRemove: function () {
-            this._unregisterChildren();
-
-            this.undelegateEvents();
-            this.$el.off();
-
-            this.off();
-        },
-
-        /**
-         * @destructor
-         */
-        remove: function () {
-            this.onBeforeRemove();
-            View.__super__.remove.call(this);
-        },
-
-        /**
-         * @type Function
-         * {@link Skull.Abstract#_parentResult}
-         */
-        _parentResult: Abstract.prototype._parentResult
-    });
+    Skull.View = Skull.extendView(Backbone.View);
 
     /**
      * Skull.Application is very basic sample of application.
@@ -1399,7 +1139,7 @@
      * @class Skull.Application
      * @extends Skull.Observable
      */
-    var Application = Skull.Application = Observable.extend(/** @lends Skull.Application.prototype */{
+    Skull.Application = Skull.Observable.extend(/** @lends Skull.Application.prototype */{
         defaults: {
             node: 'html',
             router: Backbone.Router,

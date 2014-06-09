@@ -1,7 +1,5 @@
 define(
     function (require) {
-        require('mockjax');
-
         var Skull = require('skull'),
             ResourceRegistry = Skull.ResourceRegistry,
             registry = new ResourceRegistry,
@@ -9,6 +7,7 @@ define(
             Model = Skull.Model;
 
         registry.register('syncer', new Skull.Syncer(passReg));
+        registry.register('getApiUrl', function () { return '/' });
 
         function createModel(options) {
             return new Model({}, _.extend({}, passReg, options));
@@ -45,6 +44,21 @@ define(
                 clonedModel = model.clone();
 
             QUnit.ok(clonedModel.registry, 'Cloned properly');
+        });
+
+        QUnit.test('Correct generation of URL on base of `resource`', function (QUnit) {
+
+            var CustomModel = Model.extend({
+                resource: 'answer'
+            });
+
+            var m = new CustomModel({}, passReg);
+
+            QUnit.equal(m.url(), '/answer/', 'Correct URL generated for new model');
+
+
+            m.set({id: 42});
+            QUnit.equal(m.url(), '/answer/42/', 'Correct URL generated for model with id');
         });
     }
 );

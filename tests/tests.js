@@ -9,9 +9,7 @@
         './suit/Template.js',
         './suit/Syncer.js',
         './suit/Model.js',
-        './suit/RestModel.js',
         './suit/Collection.js',
-        './suit/RestCollection.js',
         './suit/View.js'
     ];
 
