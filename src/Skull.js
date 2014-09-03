@@ -824,6 +824,29 @@
 
 
     /**
+     * Recursively replaces tokens with values from `ctx`.
+     * @example unfold('$test $test2', false, {test: 'simple string', test2: 'string with $catch22', catch22: 'catch'}) === 'simple string string with catch'
+     * @param {String} src
+     * @param {RegExp} [tokenRe=/\$([^\., ]+)/mg]
+     * @param {Object} [ctx=this]
+     * @returns {String}
+     */
+    function unfold (src, tokenRe, ctx) {
+        tokenRe = (tokenRe || /\$([^\., ]+)/mg);
+        ctx = (ctx || this);
+
+        var replace = function (match, key) {
+            return ctx[key];
+        };
+
+        while (src.match(tokenRe)) {
+            src = src.replace(tokenRe, replace);
+        }
+
+        return src;
+    }
+
+    /**
      * Extends given view class with all Skull.View goodness.
      * @param {Function} baseViewClass
      * @returns {constructor}
@@ -960,6 +983,12 @@
                 this.delegateEvents();
             },
 
+            _unfoldSelector: function (selector) {
+                var ui = _.result(this, '__ui__');
+
+                return unfold(selector, false, ui);
+            },
+
             _ensureUI: function (ui) {
                 ui || (ui = _.result(this, '__ui__'));
 
@@ -970,8 +999,26 @@
                 this.ui = {};
 
                 _.each(ui, function (selector, name) {
-                    this.ui[name] = this.$(selector);
+                    this.ui[name] = this.$(this._unfoldSelector(selector));
                 }, this);
+            },
+
+            delegateEvents: function (events) {
+                events || (events = _.result(this, 'events'));
+
+                var ui = _.result(this, '__ui__');
+
+                if (!ui || _.isEmpty(ui)) {
+                    return View.__super__.delegateEvents.call(this, events);
+                }
+
+                var refinedEvents = {};
+
+                _.each(events, function (handler, eventSignature) {
+                    refinedEvents[this._unfoldSelector(eventSignature)] = handler;
+                }, this);
+
+                return View.__super__.delegateEvents.call(this, refinedEvents);
             },
 
             _ensureSubviews: function (children, options) {
@@ -1042,7 +1089,7 @@
                 }
 
                 if (_.isString(params.el)) {
-                    params.el = this.$(params.el);
+                    params.el = this.$(this._unfoldSelector(params.el));
                 }
 
                 if (!viewClass) {
