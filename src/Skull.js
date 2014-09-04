@@ -215,17 +215,15 @@
 
     /**
      * A tool to combine domains, ports, protocols, API endpoints with versions ans subtypes into URL.
-     * Any URL consists of following parts: <protocol>://<domain>/<prefix>/<type>/<version>/
+     * Any URL consists of following parts: <protocol>://<domain>/<prefix>/
      * None of this parts are required, but you should understand that setting protocol without domain
-     * will result in relative URL from current domain root: /restEndpoint/clients/1.0.0/
+     * will result in relative URL from current domain root: /restEndpoint/
      * Note that skipping protocol and adding domain will lead to inheriting protocol from current document:
-     * //my.api.example.com/restEndpoint/clients/1.0.0/. This is completely valid URL.
+     * //my.api.example.com/restEndpoint/. This is completely valid URL.
      * @class Skull.UrlProvider
      */
     Skull.UrlProvider = Skull.Abstract.extend(/** @lends Skull.UrlProvider.prototype */{
         defaults: {
-            version: '',
-            type: '',
             host: '',
             protocol: '',
             port: false,
@@ -273,12 +271,12 @@
         },
 
         /**
-         * Returns relative URL form root of domain.
+         * Returns relative URL from root of domain.
          * @returns {String}
          */
         getApiPath: function () {
             if (!this.cachedUrl) {
-                var parts = _.compact([this.params.prefix, this.params.type, this.params.version]);
+                var parts = _.compact([this.params.prefix]);
                 this.cachedUrl = parts.length ? ('/' + parts.join('/') + '/') : '/';
             }
 
