@@ -1,4 +1,5 @@
 (function(root, factory) {
+    'use strict';
     if (typeof define === 'function' && define.amd) {
         // AMD
         define(['underscore', 'jquery', 'backbone', 'exports'], function(_, $, Backbone, exports) {
@@ -123,10 +124,12 @@
          * @return {Object}
          */
         register: function (key, value, options) {
-            if (arguments.length == 3) {
-                return this._fabric[key] = [value, options]
+            if (arguments.length === 3) {
+                this._fabric[key] = [value, options];
+                return this._fabric[key];
             } else {
-                return this._storage[key] = value;
+                this._storage[key] = value;
+                return this._storage[key];
             }
         },
 
@@ -137,9 +140,8 @@
          */
         unregister: function (key, isFabric) {
             if (isFabric) {
-                delete this._fabric[key]
-            }
-            else {
+                delete this._fabric[key];
+            } else {
                 delete this._storage[key];
             }
         },
@@ -151,13 +153,13 @@
          * @returns {*}
          */
         acquire: function (key, options) {
-            if (arguments.length == 2) {
+            if (arguments.length === 2) {
                 if (this._fabric[key]) {
-                    var fabric = this._fabric[key],
-                        create = fabric[0],
-                        params = _.extend({}, fabric[1], options);
+                    var fabricConfig = this._fabric[key],
+                        fabricFn = fabricConfig[0],
+                        params = _.extend({}, fabricConfig[1], options);
 
-                    return create(params);
+                    return fabricFn(params);
                 } else {
                     return this._storage[key];
                 }
@@ -195,7 +197,7 @@
         var script = $('script[' + attributeName + ']');
 
         if (!script.length) {
-            return {}
+            return {};
         }
 
         var path = script.attr(attributeName) || '',
@@ -205,11 +207,11 @@
             return {
                 host: pathParts[1],
                 protocol: pathParts[0].substring(0, pathParts[0].length - 1)
-            }
+            };
         } else {
             return {
                 host: path
-            }
+            };
         }
     };
 
@@ -260,7 +262,7 @@
                     parts.push(this.params.host);
 
                     if (this.params.port) {
-                        parts.push(':' + this.params.port)
+                        parts.push(':' + this.params.port);
                     }
                 }
 
@@ -370,11 +372,15 @@
             // And an `X-HTTP-Method-Override` header.
             if (options.emulateHTTP && (type === 'PUT' || type === 'DELETE' || type === 'PATCH')) {
                 params.type = 'POST';
-                if (options.emulateJSON) params.data._method = type;
+                if (options.emulateJSON) {
+                    params.data._method = type;
+                }
                 var beforeSend = options.beforeSend;
                 options.beforeSend = function(xhr) {
                     xhr.setRequestHeader('X-HTTP-Method-Override', type);
-                    if (beforeSend) return beforeSend.apply(this, arguments);
+                    if (beforeSend) {
+                        return beforeSend.apply(this, arguments);
+                    }
                 };
             }
 
@@ -387,13 +393,17 @@
 
             var success = options.success;
             options.success = function(resp, status, xhr) {
-                if (success) success(resp, status, xhr);
+                if (success) {
+                    success(resp, status, xhr);
+                }
                 model.trigger('sync', model, resp, options);
             };
 
             var error = options.error;
             options.error = function(xhr, status, thrown) {
-                if (error) error(model, xhr, options);
+                if (error) {
+                    error(model, xhr, options);
+                }
             };
 
             // Make the request, allowing the user to override any Ajax options.
@@ -414,7 +424,7 @@
 
             if (token && headerName) {
                 if (!params.headers) {
-                    params.headers = {}
+                    params.headers = {};
                 }
                 params.headers[headerName] = token;
             }
@@ -486,14 +496,16 @@
             var fullSelector = this.params.selectorPrefix + name,
                 node = $(fullSelector);
 
-            if (!node.length) {
-                throw new Error('No such template: "' + name + '". Make sure you have "' + fullSelector + '" node on your page');
-            } else if (node.length > 1) {
-                node = node.eq(0);
+            if (node.length) {
+                if (node.length > 1) {
+                    node = node.eq(0);
 
-                if (this.params.debug) {
-                    console.warn('Too many template nodes: ' + fullSelector);
+                    if (this.params.debug) {
+                        console.warn('Too many template nodes: ' + fullSelector);
+                    }
                 }
+            } else {
+                throw new Error('No such template: "' + name + '". Make sure you have "' + fullSelector + '" node on your page');
             }
 
             return node;
@@ -775,7 +787,7 @@
              * @returns {Object[]}
              */
             toTemplate: function () {
-                return _.invoke(this.models, 'toTemplate')
+                return _.invoke(this.models, 'toTemplate');
             },
 
             /**
@@ -831,7 +843,7 @@
      */
     function unfold (src, tokenRe, ctx) {
         tokenRe = (tokenRe || /\$([^\., ]+)/mg);
-        ctx = (ctx || this);
+        ctx = (ctx || this); // jshint ignore:line
 
         var replace = function (match, key) {
             return ctx[key];
@@ -918,14 +930,14 @@
                 // work out parameters
                 var data = {},
                     replaceEl = false;
-                if (arguments.length == 2) {
+                if (arguments.length === 2) {
                     data = tplData;
                     replaceEl = replace;
-                } else if (arguments.length == 1) {
+                } else if (arguments.length === 1) {
                     if (_.isBoolean(arguments[0])) {
-                        replaceEl = arguments[0]
+                        replaceEl = arguments[0];
                     } else {
-                        data = arguments[0]
+                        data = arguments[0];
                     }
                 }
 
@@ -943,14 +955,14 @@
                 }
 
                 // rendering at last
-                var rendered = this.template.tmpl(tpl, data);
+                var renderedStr = this.template.tmpl(tpl, data);
 
                 if (replaceEl) {
-                    var $rendered = $(rendered);
-                    this.$el.replaceWith($rendered);
-                    this.setElement($rendered);
+                    var renderedDom = $(renderedStr);
+                    this.$el.replaceWith(renderedDom);
+                    this.setElement(renderedDom);
                 } else {
-                    this.$el.html(rendered);
+                    this.$el.html(renderedStr);
                 }
             },
 
@@ -1030,7 +1042,7 @@
                     this._renderView(viewClass, selector, options);
                 };
 
-                _.each(children, renderView, this)
+                _.each(children, renderView, this);
             },
 
             _renderView: function (viewClass, selector, options) {
@@ -1094,12 +1106,12 @@
                     throw 'Invalid class when registering child: ' + viewName;
                 }
 
-                var child = new viewClass(params);
-                if (!viewName) {
+                var child = new viewClass(params); // jshint ignore:line
+                if (viewName) {
+                    child.cid = viewName;
+                } else {
                     viewName = child.cid;
                     child.viewName = viewName;
-                } else {
-                    child.cid = viewName;
                 }
 
                 this.children[viewName] = child;
@@ -1252,7 +1264,12 @@
             var component = this.params[componentName];
 
             if (_.isFunction(component)) {
-                return this.registry.register(componentName, new component({registry: this.registry}))
+                return this.registry.register(
+                    componentName,
+                    new component({ // jshint ignore:line
+                        registry: this.registry
+                    })
+                );
             } else {
                 var constructor = component[0],
                     params = component[1];
@@ -1263,7 +1280,12 @@
 
                 params.registry = this.registry;
 
-                return this.registry.register(componentName, new constructor(params));
+                return this.registry.register(
+                    componentName,
+                    new constructor( // jshint ignore:line
+                        params
+                    )
+                );
             }
         },
 
@@ -1310,5 +1332,5 @@
         }
     });
 
-    return Skull
+    return Skull;
 }));
