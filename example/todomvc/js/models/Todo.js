@@ -9,6 +9,10 @@ define(
             defaults: {
                 title: '',
                 completed: false
+            },
+
+            toggleCompleted: function () {
+                this.set('completed', !this.get('completed'));
             }
         });
 

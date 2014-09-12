@@ -14,20 +14,22 @@ require(
         './Router',
         './StorageSyncer',
 
-        './views/Root'
+        './views/Root',
+        './collections/Todo'
     ],
 
-    function (Skull, Application, Router, StorageSyncer, ViewRoot) {
-        console.log(Skull);
+    function (Skull, Application, Router, StorageSyncer, ViewRoot, TodoCollection) {
+        'use strict';
 
         var app = new Application({
             router: Router,
             syncer: StorageSyncer,
 
             rootView: ViewRoot
-
         });
 
-        app.start()
+        app.registry.register('todosCollection', new TodoCollection([], {registry: app.registry}));
+
+        app.start();
     }
 );

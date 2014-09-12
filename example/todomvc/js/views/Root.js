@@ -1,13 +1,17 @@
 define(
     [
-        'Skull'
+        'Skull',
+        './Header',
+        './Main',
+        './Footer'
     ],
-    function (Skull) {
+    function (Skull, HeaderView, MainView, FooterView) {
         'use strict';
 
         var ViewRoot = Skull.View.extend({
             __children__: {
                 '#header': HeaderView,
+                '#main': MainView,
                 '#footer': FooterView
             },
 
