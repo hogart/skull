@@ -1,7 +1,7 @@
 define(
     [
         'Skull',
-        'Model/Todo',
+        'models/Todo',
         'underscore'
     ],
     function (Skull, ModelTodo, _) {

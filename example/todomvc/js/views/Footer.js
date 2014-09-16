@@ -71,5 +71,7 @@ define(
                 return false;
             }
         });
+
+        return FooterView;
     }
 );

@@ -48,5 +48,7 @@ define(
                 this.collection.markCompleted(isCompleted);
             }
         });
+
+        return MainView;
     }
 );

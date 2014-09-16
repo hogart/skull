@@ -28,7 +28,27 @@ require(
             rootView: ViewRoot
         });
 
-        app.registry.register('todosCollection', new TodoCollection([], {registry: app.registry}));
+        var todosFixture = [
+            {
+                title: 'Create a TodoMVC template',
+                completed: true
+            }, {
+                title: 'Rule the web',
+                completed: false
+            }
+        ];
+
+        try {
+            var storedTodos = localStorage.getItem('todos');
+            if (storedTodos) {
+                todosFixture = JSON.parse();
+            }
+        } catch (e) {
+
+        }
+
+
+        app.registry.register('todosCollection', new TodoCollection(todosFixture, {registry: app.registry}));
 
         app.start();
     }

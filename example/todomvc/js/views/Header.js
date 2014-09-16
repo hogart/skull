@@ -35,5 +35,7 @@ define(
                 }
             }
         });
+
+        return HeaderView;
     }
 );
