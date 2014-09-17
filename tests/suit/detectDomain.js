@@ -1,6 +1,9 @@
 define(
     function (require) {
+        'use strict';
+
         var detectDomain = require('skull').detectDomain,
+            $ = require('jquery'),
             scriptTag;
 
         function createTag (/** String */value, /**String */attrName) {

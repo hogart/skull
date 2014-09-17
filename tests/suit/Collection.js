@@ -2,13 +2,13 @@ define(
     function (require) {
         var Skull = require('skull'),
             ResourceRegistry = Skull.ResourceRegistry,
-            registry = new ResourceRegistry,
+            registry = new ResourceRegistry(),
             passReg = {registry: registry},
             Collection = Skull.Collection,
             Model = Skull.Model;
 
         registry.register('syncer', new Skull.Syncer(passReg));
-        registry.register('getApiUrl', function () { return '/' });
+        registry.register('getApiUrl', function () { return '/'; });
 
         function createCollection(options) {
             return new Collection([], _.extend({}, passReg, options));

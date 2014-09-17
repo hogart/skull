@@ -1,12 +1,14 @@
 define(
     function (require) {
+        'use strict';
+
         var UrlProvider = require('skull').UrlProvider,
             provider;
 
 
         QUnit.module('UrlProvider', {
-            setup: function () { provider = new UrlProvider({}) },
-            teardown: function () { provider = null }
+            setup: function () { provider = new UrlProvider({}); },
+            teardown: function () { provider = null; }
         });
 
         QUnit.test('prefix and domain', function (QUnit) {

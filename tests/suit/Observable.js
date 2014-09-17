@@ -1,7 +1,8 @@
 define(
     function (require) {
-        var Observable = require('skull').Observable;
+        'use strict';
 
+        var Observable = require('skull').Observable;
 
         QUnit.module('Skull.Observable', {
 //            setup: function () {  },
@@ -10,7 +11,7 @@ define(
 
         QUnit.test('descendants has appropriate methods', 7, function (QUnit) {
             var Bus = Observable.extend({}),
-                bus = new Bus;
+                bus = new Bus();
 
             QUnit.ok(bus.on, 'Has `on`');
             QUnit.ok(bus.off, 'Has `off`');

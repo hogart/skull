@@ -1,5 +1,7 @@
 define(
     function (require) {
+        'use strict';
+
         var Abstract = require('skull').Abstract,
             paramsAmount;
 

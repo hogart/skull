@@ -6,8 +6,7 @@ var require = {
         skull: '../src/Skull',
         mockjax: '../lib/jquery.mockjax',
         backbone: '../lib/backbone/backbone',
-        underscore: '../lib/underscore/underscore',
-        _: '../lib/underscore'
+        underscore: '../lib/underscore/underscore'
     },
 
     shim: {

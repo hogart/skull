@@ -1,14 +1,17 @@
 define(
     function (require) {
-        require('mockjax');
+        'use strict';
 
         var Skull = require('skull'),
             Syncer = Skull.Syncer,
             Observable = Skull.Observable,
-            registry = new Skull.ResourceRegistry,
+            registry = new Skull.ResourceRegistry(),
             passReg = {registry: registry},
+            $ = require('jquery'),
 
             tokenStr = 'Raxacoricofallapatorius';
+
+        require('mockjax');
 
         $.mockjaxSettings = {
             contentType: 'text/json',
@@ -22,10 +25,10 @@ define(
         var MockModel = Observable.extend({
                 url: '/syncerTest',
                 toJSON: function () {
-                    return {answer: 42}
+                    return {answer: 42};
                 }
             }),
-            model = new MockModel;
+            model = new MockModel();
 
 
         QUnit.module('Skull.Syncer', {
@@ -40,7 +43,9 @@ define(
                 url: model.url,
                 response: function () {
                     QUnit.ok(!this.headers[syncer.params.authHeaderName], 'No auth headers present');
+                    /* jshint -W117 */
                     start();
+                    /* jshint -W117 */
                 }
             });
 
@@ -48,7 +53,7 @@ define(
         });
 
         QUnit.asyncTest('Correctly handles authorization', function (QUnit) {
-            registry.register('getToken', function () { return tokenStr });
+            registry.register('getToken', function () { return tokenStr; });
 
              var syncer = new Syncer(passReg);
 
@@ -56,7 +61,9 @@ define(
                 url: model.url,
                 response: function () {
                     QUnit.equal(this.headers[syncer.params.authHeaderName], tokenStr, 'Correct auth header');
+                    /* jshint -W117 */
                     start();
+                    /* jshint -W117 */
                 }
              });
 

@@ -1,13 +1,16 @@
 define(
     function (require) {
+        'use strict';
+
         var Skull = require('skull'),
             ResourceRegistry = Skull.ResourceRegistry,
-            registry = new ResourceRegistry,
+            registry = new ResourceRegistry(),
             passReg = {registry: registry},
-            Model = Skull.Model;
+            Model = Skull.Model,
+            _ = require('underscore');
 
         registry.register('syncer', new Skull.Syncer(passReg));
-        registry.register('getApiUrl', function () { return '/' });
+        registry.register('getApiUrl', function () { return '/'; });
 
         function createModel(options) {
             return new Model({}, _.extend({}, passReg, options));

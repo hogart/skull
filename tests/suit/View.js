@@ -1,11 +1,15 @@
 define(
     function (require) {
-        var Skull = require('skull'),
-            registry = new Skull.ResourceRegistry,
+        'use strict';
+
+        var $ = require('jquery'),
+            _ = require('underscore'),
+            Skull = require('skull'),
+            registry = new Skull.ResourceRegistry(),
             passReg = {registry: registry},
             View = Skull.View;
 
-        registry.register('template', new Skull.Template);
+        registry.register('template', new Skull.Template());
 
         function createTemplate(name, content) {
             var tplNode = $('<script type="text/x-template" class="js-tpl-' + name + '">' + content + '</script>');
@@ -67,7 +71,7 @@ define(
                 }),
                 model = {
                     toTemplate: function () {
-                        return {a: 40, b: 2}
+                        return {a: 40, b: 2};
                     }
                 };
 

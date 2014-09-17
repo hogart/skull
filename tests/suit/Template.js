@@ -1,6 +1,9 @@
 define(
     function (require) {
-        var Template = require('skull').Template,
+        'use strict';
+
+        var $ = require('jquery'),
+            Template = require('skull').Template,
             tplNode;
 
         function createTemplate (name, content) {
@@ -11,7 +14,7 @@ define(
 
         QUnit.module('Skull.Template', {
 //            setup: function () {  },
-            teardown: function () { tplNode.remove() }
+            teardown: function () { tplNode.remove(); }
         });
 
         QUnit.test('Finds correct node by template name and throws exception when can\'t do that', function (QUnit) {
@@ -23,7 +26,7 @@ define(
 
             QUnit.throws(
                 function () {
-                    template._getTemplateNode('russelsTeapot')
+                    template._getTemplateNode('russelsTeapot');
                 },
                 Error,
                 'Can\'t find non-existent entity and warns you about that'
@@ -67,7 +70,7 @@ define(
             var template = new Template({}),
                 fetchedBefore = template._getTemplate('test');
 
-            QUnit.equal(template._templates['test']({}), '42', 'Templates are correctly stored internally');
+            QUnit.equal(template._templates.test({}), '42', 'Templates are correctly stored internally');
 
             tplNode.text('changed template');
             var fetchedAfter = template._getTemplate('test');
@@ -120,7 +123,7 @@ define(
 
             window.console = {
                 warn: function (msg) {
-                    QUnit.ok(msg, 'Prints to console about multiply templates')
+                    QUnit.ok(msg, 'Prints to console about multiply templates');
                 }
             };
 
