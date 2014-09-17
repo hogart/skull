@@ -52,7 +52,7 @@
 
     /**
      * Abstract class that can be extended in Backbone way.
-     * Also works with {@link Skull.ResourceRegistry} if it was passed as `registry` in first argument, utilizing {@link Skull.processRegistry}
+     * Also works with {@link Skull.ResourceRegistry} if it was passed as `registry` in first argument, utilizing {@link Skull.ResourceRegistry.processRegistry}
      * @class Skull.Abstract
      */
     Skull.Abstract = function () {
@@ -68,7 +68,7 @@
                 this.registry = options.registry;
 
                 if (_.result(this, '__registry__')) {
-                    Skull.processRegistry(this);
+                    Skull.ResourceRegistry.processRegistry(this);
                 }
             }
         },
@@ -167,24 +167,24 @@
                 return this._storage[key];
             }
         }
-    });
+    }, /** @lends Skull.ResourceRegistry */{
+        /**
+         * Iterates over context.__registry__, acquiring dependencies from it via context.registry.acquire
+         * @type {Function}
+         */
+        processRegistry: function (context) {
+            var items = _.result(context, '__registry__'),
+                registry = context.registry,
+                requirement;
 
-    /**
-     * Iterates over context.__registry__, acquiring dependencies from it via context.registry.acquire
-     * @type {Function}
-     */
-    Skull.processRegistry = function (context) {
-        var items = _.result(context, '__registry__'),
-            registry = context.registry,
-            requirement;
-
-        if (items) {
-            for (var key in items) {
-                requirement = _.isArray(items[key]) ? items[key] : [items[key]];
-                context[key] = registry.acquire.apply(registry, requirement);
+            if (items) {
+                for (var key in items) {
+                    requirement = _.isArray(items[key]) ? items[key] : [items[key]];
+                    context[key] = registry.acquire.apply(registry, requirement);
+                }
             }
         }
-    };
+    });
 
     /**
      * Detects host and protocol for your API from `<script data-api-domain="http://my.api.example.com"/>`
@@ -330,7 +330,7 @@
          */
         initialize: function (options) {
             this.registry = options.registry;
-            Skull.processRegistry(this);
+            Skull.ResourceRegistry.processRegistry(this);
 
             this.params = _.extend({}, this.defaults, options);
         },
@@ -638,7 +638,7 @@
             /** @constructs */
             constructor: function (attributes, options) {
                 this.registry = options.registry;
-                Skull.processRegistry(this);
+                Skull.ResourceRegistry.processRegistry(this);
 
                 Model.__super__.constructor.call(this, attributes, options);
 
@@ -761,7 +761,7 @@
                 this.resource = this.model.prototype.resource;
 
                 this.registry = options.registry;
-                Skull.processRegistry(this);
+                Skull.ResourceRegistry.processRegistry(this);
 
                 Collection.__super__.constructor.call(this, models, options);
 
@@ -902,7 +902,7 @@
              */
             constructor: function (options) {
                 this.registry = options.registry;
-                Skull.processRegistry(this);
+                Skull.ResourceRegistry.processRegistry(this);
 
                 View.__super__.constructor.call(this, options);
 
