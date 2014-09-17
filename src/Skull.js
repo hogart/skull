@@ -114,6 +114,8 @@
 
             /** @private */
             this._fabric = {};
+
+            this._fabricCache = {};
         },
 
         /**
@@ -157,9 +159,14 @@
                 if (this._fabric[key]) {
                     var fabricConfig = this._fabric[key],
                         fabricFn = fabricConfig[0],
-                        params = _.extend({}, fabricConfig[1], options);
+                        params = _.extend({}, fabricConfig[1], options),
+                        cacheKey =  key + '-' + JSON.stringify(params);
 
-                    return fabricFn(params);
+                    if (this._fabricCache[cacheKey]) {
+                        return this._fabricCache[cacheKey];
+                    } else {
+                        return (this._fabricCache[cacheKey] = fabricFn(params));
+                    }
                 } else {
                     return this._storage[key];
                 }

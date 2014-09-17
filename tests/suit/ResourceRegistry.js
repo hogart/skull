@@ -42,6 +42,24 @@ define(
                 registry.acquire(resName, param),
                 _.extend({}, option, param)
             );
+
+            registry.unregister(resName, true);
+        });
+
+        QUnit.test('registry memoizes  factories call', 3, function (QUnit) {
+            var option = {answer: 42},
+                param = {question: 'To be or not to be'},
+                resName = 'testFactory';
+
+            registry.register(resName, testFactory, option);
+
+            QUnit.deepEqual(registry._fabric[resName][0], testFactory);
+            QUnit.deepEqual(registry._fabric[resName][1], option);
+
+            QUnit.deepEqual(
+                registry.acquire(resName, param),
+                _.extend({}, option, param)
+            );
         });
 
         QUnit.test('ResourceRegistry#acquire returns undefined on unknown key', 2, function (QUnit) {
