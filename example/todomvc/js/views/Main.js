@@ -32,6 +32,8 @@ define(
                 MainView.__super__.initialize.apply(this, arguments);
 
                 this.listenTo(this.collection, 'add remove', this.onCollectionChange);
+
+                this.onRender();
             },
 
             onCollectionChange: function () {

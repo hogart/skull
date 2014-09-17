@@ -1,8 +1,9 @@
 define(
     [
-        'Skull'
+        'Skull',
+        'underscore'
     ],
-    function (Skull) {
+    function (Skull, _) {
         'use strict';
 
         var StorageSyncer = Skull.Syncer.extend({
@@ -16,12 +17,12 @@ define(
                     response,
                     rawResponse;
 
-                if (!(url in localStorage) && (params.type != 'POST')) {
+                if (!(url in localStorage) && (params.type !== 'POST')) {
                     status = 404;
                 } else {
-                    if (params.type == 'GET') { // read
+                    if (params.type === 'GET') { // read
                         try {
-                            rawResponse = JSON.parse(localStorage.getItem(url))
+                            rawResponse = JSON.parse(localStorage.getItem(url));
                         } catch (exception) {
                             status = 500;
                             thrown = exception;
@@ -31,7 +32,7 @@ define(
                             response = rawResponse;
                             status = 200;
                         }
-                    } else if (params.type == 'POST') { // create
+                    } else if (params.type === 'POST') { // create
                         try {
                             localStorage.setItem(url, params.data);
                         } catch (exception) {
@@ -42,7 +43,7 @@ define(
                         if (!isError) {
                             response = params.data;
                         }
-                    } else if (params.type == 'PUT' || params.type == 'PATCH') { // update
+                    } else if (params.type === 'PUT' || params.type === 'PATCH') { // update
                         var data = _.extend(JSON.parse(localStorage.getItem(url)), params.data);
 
                         try {
@@ -55,7 +56,7 @@ define(
                         if (!isError) {
                             response = params.data;
                         }
-                    } else if (params.type == 'DELETE') {
+                    } else if (params.type === 'DELETE') {
                         localStorage.removeItem(url);
                         response = null;
                     }

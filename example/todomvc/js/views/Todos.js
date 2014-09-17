@@ -37,6 +37,11 @@ define(
                 this.render();
             },
 
+            render: function () {
+                this.rr({todos: this.collection.toTemplate()});
+                this.onRender();
+            },
+
             onFocus: function (evt) {
                 $(evt.target).closest('label').addClass('editing');
             },

@@ -24,6 +24,11 @@ define(
                 titleInput: '#new-todo'
             },
 
+            initialize: function (options) {
+                HeaderView.__super__.initialize.apply(this, arguments);
+                this.onRender();
+            },
+
             createOnEnter: function (evt) {
                 var title;
                 if (evt.which === keyCodes.ENTER && (title = this.ui.titleInput.val().trim())) {

@@ -59,7 +59,7 @@ define(
 
                 if (hasCompleted) {
                     this.ui.clearCompleted.show();
-                    this.ui.completedCount.text(hasCompleted);
+                    this.ui.completedCount.text(hasCompleted.length);
                 }
 
                 this.ui.itemsLeft.text(overallTodos - hasCompleted);

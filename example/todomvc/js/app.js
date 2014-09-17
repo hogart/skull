@@ -39,7 +39,7 @@ require(
         ];
 
         try {
-            var storedTodos = localStorage.getItem('todos');
+            var storedTodos = localStorage.getItem('/todos/');
             if (storedTodos) {
                 todosFixture = JSON.parse();
             }

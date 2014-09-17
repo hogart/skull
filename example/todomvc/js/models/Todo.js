@@ -11,6 +11,8 @@ define(
                 completed: false
             },
 
+            resource: 'todos',
+
             toggleCompleted: function () {
                 this.set('completed', !this.get('completed'));
             }
