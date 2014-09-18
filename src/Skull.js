@@ -102,7 +102,8 @@
     Skull.Observable = Skull.Abstract.extend(Backbone.Events);
 
     /**
-     * Simple implementation of Registry pattern
+     * Simple implementation of Registry pattern. Can store plain values or factories.
+     * Stored factory gets memoized — that is, returns same object given the same parameters. Memoizing assumes fabric is pure function.
      * @class Skull.ResourceRegistry
      * @extends Skull.Abstract
      * @constructor
@@ -115,11 +116,13 @@
             /** @private */
             this._fabric = {};
 
+            /** @private */
             this._fabricCache = {};
         },
 
         /**
-         * Registers object or fabric by given <code>key<code>
+         * Registers object or fabric by given <code>key<code>. Pass third argument to store fabric.
+         * @throws TypeError when not a function passed as fabric
          * @param {String} key
          * @param {Object} value
          * @param {Object} [options={}]
@@ -127,7 +130,11 @@
          */
         register: function (key, value, options) {
             if (arguments.length === 3) {
+                if (!_.isFunction(value)) {
+                    throw new TypeError('Not a function passed as fabric with "' + key + '" key');
+                }
                 this._fabric[key] = [value, options];
+                this._fabricCache[key] = {};
                 return this._fabric[key];
             } else {
                 this._storage[key] = value;
@@ -143,6 +150,7 @@
         unregister: function (key, isFabric) {
             if (isFabric) {
                 delete this._fabric[key];
+                delete this._fabricCache[key];
             } else {
                 delete this._storage[key];
             }
@@ -159,13 +167,14 @@
                 if (this._fabric[key]) {
                     var fabricConfig = this._fabric[key],
                         fabricFn = fabricConfig[0],
-                        params = _.extend({}, fabricConfig[1], options),
-                        cacheKey =  key + '-' + JSON.stringify(params);
+                        fabricPreOptions = fabricConfig[1],
+                        params = _.extend({}, fabricPreOptions, options),
+                        cacheKey = JSON.stringify(params);
 
-                    if (this._fabricCache[cacheKey]) {
-                        return this._fabricCache[cacheKey];
+                    if (this._fabricCache[key][cacheKey]) {
+                        return this._fabricCache[key][cacheKey];
                     } else {
-                        return (this._fabricCache[cacheKey] = fabricFn(params));
+                        return (this._fabricCache[key][cacheKey] = fabricFn(params));
                     }
                 } else {
                     return this._storage[key];
@@ -177,17 +186,41 @@
     }, /** @lends Skull.ResourceRegistry */{
         /**
          * Iterates over context.__registry__, acquiring dependencies from it via context.registry.acquire
+         * __registry__ can be hash or array (or a function returning such hash or array).
+         * Hash keys are keys to inject acquired resources, and values are keys to acquire. If value is array, than first element is key, second is params fo fabric.
+         * Array is simplified form of hash. Following hash and array are equivalent:
+         * {
+         *  'res1': 'res1',
+         *  fabric1: ['fabric1', {param: 42}]
+         * }
+         * ['res1', ['fabric1', {param: 42}]]
          * @type {Function}
          */
         processRegistry: function (context) {
-            var items = _.result(context, '__registry__'),
-                registry = context.registry,
-                requirement;
+            var items = _.result(context, '__registry__');
 
             if (items) {
-                for (var key in items) {
-                    requirement = _.isArray(items[key]) ? items[key] : [items[key]];
-                    context[key] = registry.acquire.apply(registry, requirement);
+                var registry = context.registry,
+                    inject = function (injectAs, resourceRequest) {
+                        context[injectAs] = registry.acquire.apply(registry, resourceRequest);
+                    };
+
+                if (_.isArray(items)) {
+                    _.each(items, function (resourceRequest, index) {
+                        if (!_.isArray(resourceRequest)) {
+                            resourceRequest = [resourceRequest];
+                        }
+
+                        inject(resourceRequest[0], resourceRequest);
+                    });
+                } else {
+                    _.each(items, function (resourceRequest, injectAs) {
+                        if (!_.isArray(resourceRequest)) {
+                            resourceRequest = [resourceRequest];
+                        }
+
+                        inject(injectAs, resourceRequest);
+                    });
                 }
             }
         }

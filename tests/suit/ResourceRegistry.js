@@ -18,63 +18,67 @@ define(
 //            teardown: function () {  }
         });
 
-        QUnit.test('registry stores and fetches plain resources', 2, function (QUnit) {
+        QUnit.test('registry stores and fetches plain resources', 3, function (QUnit) {
             var resName = 'testRes',
                 val = 'testValue';
 
             registry.register(resName, val);
 
-            QUnit.equal(registry._storage[resName], val);
-            QUnit.equal(registry.acquire(resName), val);
+            QUnit.equal(registry._storage[resName], val, 'Registry stored object correctly');
+            QUnit.equal(registry.acquire(resName), val, 'Registry fetched correct object');
+
+            QUnit.equal(registry.acquire('some crazy key'), undefined, 'Registry returned undefined to non-existent key');
         });
 
-        QUnit.test('registry stores and fetches factories', 3, function (QUnit) {
+        QUnit.test('registry stores and fetches factories', 4, function (QUnit) {
             var option = {answer: 42},
                 param = {question: 'To be or not to be'},
                 resName = 'testFactory';
 
             registry.register(resName, testFactory, option);
 
-            QUnit.deepEqual(registry._fabric[resName][0], testFactory);
-            QUnit.deepEqual(registry._fabric[resName][1], option);
+            QUnit.deepEqual(registry._fabric[resName][0], testFactory, 'Registry stored factory correctly');
+            QUnit.deepEqual(registry._fabric[resName][1], option, 'Registry stored factory pre-options correctly');
 
             QUnit.deepEqual(
                 registry.acquire(resName, param),
                 _.extend({}, option, param)
             );
+
+            QUnit.equal(registry.acquire('some crazy key', {test: true}), undefined, 'Registry returned undefined to non-existent key');
 
             registry.unregister(resName, true);
         });
 
-        QUnit.test('registry memoizes  factories call', 3, function (QUnit) {
+        QUnit.test('registry memoizes factories call', 4, function (QUnit) {
             var option = {answer: 42},
                 param = {question: 'To be or not to be'},
-                resName = 'testFactory';
+                resName = 'testFactory',
+                callCounter = 0;
 
-            registry.register(resName, testFactory, option);
+            function testMemoizedFactory (value) {
+                callCounter++;
+                return value;
+            }
 
-            QUnit.deepEqual(registry._fabric[resName][0], testFactory);
-            QUnit.deepEqual(registry._fabric[resName][1], option);
+            registry.register(resName, testMemoizedFactory, option);
 
-            QUnit.deepEqual(
-                registry.acquire(resName, param),
-                _.extend({}, option, param)
-            );
-        });
+            var firstResult = registry.acquire(resName, param);
+            QUnit.equal(callCounter, 1, 'Fabric was called first time');
 
-        QUnit.test('ResourceRegistry#acquire returns undefined on unknown key', 2, function (QUnit) {
-            QUnit.equal(registry.acquire('some crazy key'), undefined);
-            QUnit.equal(registry.acquire('some crazy key', {test: true}), undefined);
+            var memoizedResult = registry.acquire(resName, param);
+            QUnit.equal(callCounter, 1, 'Fabric was not called second time');
+
+            QUnit.deepEqual(firstResult, memoizedResult, 'Memoized results are identical');
+
+            registry.acquire(resName, {someOtherParam: Math.PI});
+            QUnit.equal(callCounter, 2, 'Fabric was called when acquired with different params');
+
+            registry.unregister(resName, true);
         });
 
         registry.register('answer', 42);
         registry.register('fabric', function (val) { return val; }, option);
-
-
-        QUnit.module('Skull.processRegistry', {
-//            setup: function () {  },
-//            teardown: function () {  }
-        });
 
         QUnit.test('processRegistry acquires values from registry when __registry__ is plain object', function (QUnit) {
             var param = {question: 'To be or not to be'},
@@ -88,8 +92,24 @@ define(
 
             processRegistry(obj);
 
-            QUnit.equal(obj.answer, 42);
-            QUnit.deepEqual(obj.fabric, _.extend({}, option, param));
+            QUnit.equal(obj.answer, 42, 'Plain resource fetched correctly');
+            QUnit.deepEqual(obj.fabric, _.extend({}, option, param), 'Fabric result fetched correctly');
+        });
+
+        QUnit.test('processRegistry acquires values from registry when __registry__ is array', function (QUnit) {
+            var param = {question: 'To be or not to be'},
+                obj = {
+                registry: registry,
+                __registry__: [
+                    'answer',
+                    ['fabric', param]
+                ]
+            };
+
+            processRegistry(obj);
+
+            QUnit.equal(obj.answer, 42, 'Plain resource fetched correctly');
+            QUnit.deepEqual(obj.fabric, _.extend({}, option, param), 'Fabric result fetched correctly');
         });
 
         QUnit.test('processRegistry acquires values from registry when __registry__ is function', function (QUnit) {
@@ -106,8 +126,8 @@ define(
 
             processRegistry(obj);
 
-            QUnit.equal(obj.answer, 42);
-            QUnit.deepEqual(obj.fabric, _.extend({}, option, param));
+            QUnit.equal(obj.answer, 42, 'Plain resource fetched correctly');
+            QUnit.deepEqual(obj.fabric, _.extend({}, option, param), 'Fabric result fetched correctly');
         });
     }
 );
