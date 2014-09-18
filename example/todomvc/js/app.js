@@ -23,10 +23,11 @@ require(
 
         var app = new Application({
             router: Router,
-            syncer: StorageSyncer,
 
             rootView: ViewRoot
         });
+
+        app.registry.register('syncer', StorageSyncer.instantiate.bind(StorageSyncer), {registry: app.registry});
 
         var todosFixture = [
             {
@@ -38,17 +39,8 @@ require(
             }
         ];
 
-        try {
-            var storedTodos = localStorage.getItem('/todos/');
-            if (storedTodos) {
-                todosFixture = JSON.parse();
-            }
-        } catch (e) {
 
-        }
-
-
-        app.registry.register('todosCollection', new TodoCollection(todosFixture, {registry: app.registry}));
+        app.registry.register('todosCollection', new TodoCollection([], {registry: app.registry}));
 
         app.start();
     }

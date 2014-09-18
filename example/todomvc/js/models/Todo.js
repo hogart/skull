@@ -1,11 +1,11 @@
 define(
     [
-        'Skull'
+        './Abstract'
     ],
-    function (Skull) {
+    function (ModelAbstract) {
         'use strict';
 
-        var ModelTodo = Skull.Model.extend({
+        var ModelTodo = ModelAbstract.extend({
             defaults: {
                 title: '',
                 completed: false

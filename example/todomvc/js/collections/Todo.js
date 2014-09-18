@@ -1,14 +1,16 @@
 define(
     [
-        'Skull',
+        './Abstract',
         'models/Todo',
         'underscore'
     ],
-    function (Skull, ModelTodo, _) {
+    function (AbstractCollection, ModelTodo, _) {
         'use strict';
 
-        var CollectionTodo = Skull.Collection.extend({
+        var CollectionTodo = AbstractCollection.extend({
             model: ModelTodo,
+
+            resource: ModelTodo.prototype.resource,
 
             /**
              * Filter down the list of all todo items that are finished.
