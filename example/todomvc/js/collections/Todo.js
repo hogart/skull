@@ -12,6 +12,24 @@ define(
 
             resource: ModelTodo.prototype.resource,
 
+            initialize: function (models, options) {
+                CollectionTodo.__super__.initialize.apply(this, arguments);
+
+                if (options.firstStart) {
+                    this.add([
+                        {
+                            title: 'Create a TodoMVC template',
+                            completed: true
+                        }, {
+                            title: 'Rule the web',
+                            completed: false
+                        }
+                    ]);
+                } else {
+                    this.fetch();
+                }
+            },
+
             /**
              * Filter down the list of all todo items that are finished.
              * @return [ModelTodo]

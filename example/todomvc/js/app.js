@@ -29,19 +29,10 @@ require(
 
         app.registry.register('syncer', StorageSyncer.instantiate.bind(StorageSyncer), {registry: app.registry});
 
-        var todosFixture = [
-            {
-                title: 'Create a TodoMVC template',
-                completed: true
-            }, {
-                title: 'Rule the web',
-                completed: false
-            }
-        ];
-
-
-        app.registry.register('todosCollection', new TodoCollection([], {registry: app.registry}));
+        app.registry.register('todosCollection', new TodoCollection(null, {registry: app.registry, firstStart: !localStorage.getItem('secondStart')}));
 
         app.start();
+
+        localStorage.setItem('secondStart', true);
     }
 );

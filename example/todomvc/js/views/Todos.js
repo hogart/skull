@@ -31,13 +31,14 @@ define(
 
             initialize: function (options) {
                 TodosView.__super__.initialize.apply(this, arguments);
-
+console.log(this.collection);
                 this.listenTo(this.collection, 'change add remove', this.render);
 
                 this.render();
             },
 
             render: function () {
+                console.log(this.collection.length);
                 this.rr({todos: this.collection.toTemplate()});
                 this.onRender();
             },
