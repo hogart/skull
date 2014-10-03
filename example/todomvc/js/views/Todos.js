@@ -26,30 +26,33 @@ define(
                 'keypress .edit': 'updateOnEnter',
                 'keydown .edit': 'revertOnEscape',
 
-                'change .toggle': 'onToggle'
+                'dblclick label': 'edit',
+
+                'change .toggle': 'onToggle',
+
+                'click .destroy': 'onDestroy'
             },
 
             initialize: function (options) {
                 TodosView.__super__.initialize.apply(this, arguments);
-console.log(this.collection);
+
                 this.listenTo(this.collection, 'change add remove', this.render);
 
                 this.render();
             },
 
             render: function () {
-                console.log(this.collection.length);
                 this.rr({todos: this.collection.toTemplate()});
                 this.onRender();
             },
 
             onFocus: function (evt) {
-                $(evt.target).closest('label').addClass('editing');
+                $(evt.target).closest('li').addClass('editing');
             },
 
             onBlur: function (evt) {
                 var input = $(evt.target);
-                var label = input.closest('label');
+                var label = input.closest('li');
                 var id = label.attr('data-id');
 
                 var value = input.val();
@@ -77,9 +80,9 @@ console.log(this.collection);
 
             revertOnEscape: function (evt) {
                 if (evt.which === keyCodes.ESC) {
-                    var target = $(evt.target),
-                        label = target.closest('label'),
-                        id = label.attr('data-id');
+                    var target = $(evt.target);
+                    var label = target.closest('li');
+                    var id = label.attr('data-id');
 
                     label.removeClass('editing');
                     // Also reset the hidden input back to the original value.
@@ -87,14 +90,22 @@ console.log(this.collection);
                 }
             },
 
+            edit: function (evt) {
+                var li = $(evt.target).closest('li');
+                var input = li.find('input.edit');
+
+                li.addClass('editing');
+                input.focus();
+            },
+
             onDestroy: function (evt) {
-                var id = $(evt.target).closest('label').attr('data-id');
+                var id = $(evt.target).closest('li').attr('data-id');
 
                 this.clear(id);
             },
 
             onToggle: function (evt) {
-                var id = $(evt.target).closest('label').attr('data-id');
+                var id = $(evt.target).closest('li').attr('data-id');
 
                 this.collection.get(id).toggleCompleted();
             },

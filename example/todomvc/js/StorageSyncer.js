@@ -117,7 +117,7 @@
          */
         create: function (model) {
             if (!model.id) {
-                model.id = guid();
+                model.id = StorageSyncer.guid();
                 model.set(model.idAttribute, model.id);
             }
             this.localStorage().setItem(

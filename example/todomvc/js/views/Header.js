@@ -34,7 +34,7 @@ define(
                 if (evt.which === keyCodes.ENTER && (title = this.ui.titleInput.val().trim())) {
                     this.collection.create({
                         title: title
-                    });
+                    }).save({});
 
                     this.ui.titleInput.val('');
                 }
