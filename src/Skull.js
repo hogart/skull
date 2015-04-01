@@ -170,11 +170,12 @@
                         fabricPreOptions = fabricConfig[1],
                         params = _.extend({}, fabricPreOptions, options),
                         cacheKey = JSON.stringify(params, function (key, value) {
-                            if (value instanceof this.constructor) { // do not stringify ResourceRegistry instances, they tend to have circular references
+                            if (value instanceof Skull.ResourceRegistry) { // do not stringify ResourceRegistry instances, they tend to have circular references
                                 return undefined;
+                            } else {
+                                return value;
                             }
                         });
-
                     if (this._fabricCache[key][cacheKey]) {
                         return this._fabricCache[key][cacheKey];
                     } else {
