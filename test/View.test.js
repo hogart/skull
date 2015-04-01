@@ -107,5 +107,76 @@
                 assert.ok(sView.$('.js-replacer').length);
             });
         });
+
+        suite('__ui__ and macros in selectors', function () {
+            var el;
+
+            setup(function () {
+                createTemplate(
+                    'macrosTpl',
+                    '<div class="js-node">' +
+                    '    <div class="js-node-inner">' +
+                    '        <button class="js-node-inner-sanctum"></button>' +
+                    '    </div>' +
+                    '    <div class="js-node-other"></div>' +
+                    '</div>'
+                );
+                el = $('<div class="js-test4"></div>').appendTo(viewNest);
+            });
+
+            var BasicMacroView = View.extend({
+                tpl: 'macrosTpl',
+                __ui__: {
+                    root: '.js-node',
+                    inner: '$root-inner',
+                    btn: '$inner-sanctum',
+                    other: '$root-other'
+                }
+            });
+
+            test('Substitutes macros in __ui__', function () {
+                var macroView = new BasicMacroView(_.extend({}, passReg, {el: el}));
+
+                macroView.render();
+
+                assert.instanceOf(macroView.ui.inner[0], Node, 'One level unfolded ok');
+                assert.instanceOf(macroView.ui.btn[0], Node, 'Two levels unfolded ok');
+            });
+
+            test('Substitutes macros in events', function () {
+                var clicked = false;
+                var EventsMacroView = BasicMacroView.extend({
+                    events: {
+                        'click $btn': 'onClickBtn'
+                    },
+                    onClickBtn: function () {
+                        clicked = true;
+                    }
+                });
+
+                var eventsView = new EventsMacroView(_.extend({}, passReg, {el: el}));
+
+                eventsView.render();
+
+                eventsView.ui.btn.click();
+                assert.ok(clicked, 'Macros unfolded in events hash');
+            });
+
+            test('Substitutes macros in __children__', function () {
+                var OtherView = View.extend({});
+                var NestedMacroView = BasicMacroView.extend({
+                    __children__: {
+                        '$other': OtherView
+                    }
+                });
+
+                var nestedView = new NestedMacroView(_.extend({}, passReg, {el: el}));
+
+                nestedView.render();
+
+                assert.property(nestedView.children, '$other', 'Child view was created and assigned according to unfolded selector');
+                assert.lengthOf(nestedView.children['$other'].$el, 1, 'Child view is attached to actual DOM element');
+            });
+        });
     });
 })(mocha, chai.assert, Skull);

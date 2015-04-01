@@ -913,7 +913,7 @@
         return src;
     }
 
-    unfold.tokenRe = /\$([^\., ]+)/mg;
+    unfold.tokenRe = /\$([^\., -]+)/mg;
 
     /**
      * Extends given view class with all {@link Skull.View} goodness.
