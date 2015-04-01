@@ -1,5 +1,4 @@
-Skull
-=====
+# Skull
 
 Skull sits on top of Backbone and protects your application's brains.
 
@@ -15,3 +14,21 @@ It deals with several annoying things in Backbone-based development:
 * **Easier debugging** with sensible `cid` member
 
 And many more small improvements an even more to come.
+
+## Installation
+
+Skull supports npm and bower:
+```
+npm install backbone-skull
+bower install backbone-skull
+```
+
+Skull can be used with both CommonJS (Browserify) and AMD (require.js) loaders, as well as plain old browser globals.
+
+## Usage
+
+Please refer to `example` directory.
+
+## Development
+
+Clone repo, perform `npm install` and start hacking. To run tests, do `npm test`, to update docs — `npm jsdoc`. Skull relies on jscs and eslint for code conventions and on mocha/chai for unit-tests.
