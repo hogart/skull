@@ -28,8 +28,9 @@
   },
   "scripts": {
     "lint": "jscs . && eslint .",
-    "unit": "opn ./mocha/index.html",
-    "test": "npm run lint && npm run unit"
+    "unit": "opn ./test/index.html",
+    "test": "npm run lint && npm run unit",
+    "jsdoc": "rm -rf ./docs/ && jsdoc -c ./jsdoc.json"
   },
   "repository": {
     "type": "git",

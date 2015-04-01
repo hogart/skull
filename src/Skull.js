@@ -35,8 +35,9 @@
     'use strict';
 
     /**
-     * @author <a href="mailto:doctor.hogart@gmail.com">Konstantin Kitmanov</a>
-     * May be freely distributed under the MIT license.
+     * @author Konstantin Kitmanov [doctor.hogart@gmail.com]
+     * @license MIT
+     * @namespace Skull
      */
 
     // conflict management
@@ -74,10 +75,10 @@
         },
 
         /**
-         * Much like a {@link _.result}, but ascending to parent
+         * Much like a `_.result`, but ascending to parent
          * @param {Function} cls class derived in usual Skull paradigm (i.e. with `__super__` property pointing to parent's prototype)
          * @param {String} propertyName
-         * @returns {*}
+         * @returns {*} Most of the times it is Object
          * @protected
          */
         _parentResult: function (cls, propertyName) {
@@ -103,7 +104,7 @@
 
     /**
      * Simple implementation of Registry pattern. Can store plain values or factories.
-     * Stored factory gets memoized — that is, returns same object given the same parameters. Memoizing assumes fabric is pure function.
+     * Stored factory gets memoized — that is, returns same object given the same parameters. Memoizing assumes factory is pure function.
      * @class Skull.ResourceRegistry
      * @extends Skull.Abstract
      * @constructor
@@ -121,17 +122,17 @@
         },
 
         /**
-         * Registers object or fabric by given <code>key<code>. Pass third argument to store fabric.
-         * @throws TypeError when not a function passed as fabric
+         * Registers object or factory by given `key`. Pass third argument to store factory.
+         * @throws TypeError when not a function passed as factory
          * @param {String} key
          * @param {Object} value
          * @param {Object} [options={}]
-         * @return {Object}
+         * @return {Object} what was stored
          */
         register: function (key, value, options) {
             if (arguments.length === 3) {
                 if (!_.isFunction(value)) {
-                    throw new TypeError('Not a function passed as fabric with "' + key + '" key');
+                    throw new TypeError('Not a function passed as factory with "' + key + '" key');
                 }
                 this._fabric[key] = [value, options];
                 this._fabricCache[key] = {};
@@ -143,12 +144,12 @@
         },
 
         /**
-         * Deletes from registry
-         * @param key
-         * @param isFabric
+         * Deletes value from registry
+         * @param {String} key
+         * @param {Boolean} isFactory if true, deletes factory
          */
-        unregister: function (key, isFabric) {
-            if (isFabric) {
+        unregister: function (key, isFactory) {
+            if (isFactory) {
                 delete this._fabric[key];
                 delete this._fabricCache[key];
             } else {
@@ -158,8 +159,8 @@
 
         /**
          * Returns requested object from registry
-         * @param key
-         * @param options
+         * @param {String} key
+         * @param {Object} [options] if present, factory would be called instead of fetching plain value
          * @returns {*}
          */
         acquire: function (key, options) {
@@ -190,15 +191,18 @@
         }
     }, /** @lends Skull.ResourceRegistry */{
         /**
-         * Iterates over context.__registry__, acquiring dependencies from it via context.registry.acquire
-         * __registry__ can be hash or array (or a function returning such hash or array).
-         * Hash keys are keys to inject acquired resources, and values are keys to acquire. If value is array, than first element is key, second is params fo fabric.
+         * Iterates over `context.__registry__`, acquiring dependencies from it via `context.registry.acquire`.
+         * `__registry__` can be hash or array (or a function returning such hash or array).
+         *
+         * Hash keys are keys to inject acquired resources, and values are keys to acquire. If value is array, than first element is key, second is params fo factory.
          * Array is simplified form of hash. Following hash and array are equivalent:
+         * ```
          * {
          *  'res1': 'res1',
-         *  fabric1: ['fabric1', {param: 42}]
-         * }
-         * ['res1', ['fabric1', {param: 42}]]
+         *  factory1: ['factory1', {param: 42}]
+         * }, // and
+         * ['res1', ['factory1', {param: 42}]]
+         * ```
          * @type {Function}
          */
         processRegistry: function (context) {
@@ -232,7 +236,7 @@
     });
 
     /**
-     * Detects host and protocol for your API from `<script data-api-domain="http://my.api.example.com"/>`
+     * Detects host and protocol for your API from `script[data-api-domain="http://my.api.example.com"]`
      * @param {String} [attributeName='data-api-domain'] Definitive attribute name
      * @type {Function}
      */
@@ -262,11 +266,13 @@
 
     /**
      * A tool to combine domains, ports, protocols, API endpoints with versions ans subtypes into URL.
-     * Any URL consists of following parts: <protocol>://<domain>/<prefix>/
+     *
+     * Any URL consists of following parts: `protocol://domain/prefix/`
      * None of this parts are required, but you should understand that setting protocol without domain
-     * will result in relative URL from current domain root: /restEndpoint/
+     * will result in relative URL from current domain root: `/restEndpoint/`.
+     *
      * Note that skipping protocol and adding domain will lead to inheriting protocol from current document:
-     * //my.api.example.com/restEndpoint/. This is completely valid URL.
+     * `//my.api.example.com/restEndpoint/`, and this is completely valid URL.
      * @class Skull.UrlProvider
      */
     Skull.UrlProvider = Skull.Abstract.extend(/** @lends Skull.UrlProvider.prototype */{
@@ -333,7 +339,8 @@
 
     /**
      * Backbone.sync OOP-style
-     * Can emit auhorized requests, when provided with getToken function via registry
+     * Can emit authorized requests, when provided with `getToken` function via registry
+     * @class Skull.Syncer
      */
     Skull.Syncer = Skull.Abstract.extend(/** @lends Skull.Syncer.prototype */{
         __registry__: {
@@ -341,7 +348,7 @@
         },
 
         /**
-         * Map from CRUD to HTTP for our default syncer implementation.
+         * Map from CRUD operations to HTTP verbs for default syncer implementation.
          * @protected
          */
         _methodMap: {
@@ -370,7 +377,7 @@
          * @param {Object} options
          * @param {Boolean} [options.emulateHTTP=false] emulate HTTP 1.1 methods for old servers
          * @param {Boolean} [options.emulateJSON=false] emulate JSON by encoding the request into an HTML-form
-         * @param {String} [options.authHeaderName='Authorization'] emulate JSON by encoding the request into an HTML-form
+         * @param {String} [options.authHeaderName='Authorization'] Use this header to pass authorization token
          * @param {Skull.ResourceRegistry} options.registry registry instance
          */
         initialize: function (options) {
@@ -381,7 +388,7 @@
         },
 
         /**
-         * Pretty much the same as Backbone.sync, only allows to extend requests with authorization headers
+         * Pretty much the same as `Backbone.sync`, only allows to extend requests with authorization headers
          * @param {String} method
          * @param {Backbone.Model|Backbone.Collection} model
          * @param {Object} [options={}] Allows to override any request param
@@ -458,7 +465,7 @@
         },
 
         /**
-         * Augments request params with authorization header. Feel free to override.
+         * Augments request params with authorization header. Feel free to override with your logic.
          * @param {Object} params
          * @returns {Object} augmented request params
          * @protected
@@ -488,8 +495,8 @@
 
     /**
      * Skull.Template provides wrapper for template engine (_.template by default).
-     * This wrapper performs caching, error handling, bit of debugging info.
-     * By default Skull.Template fetches templates stored in `script` tags with 'js-tpl-<templateName>' class.
+     * This wrapper performs caching, error handling and adding a bit of debugging info.
+     * By default Skull.Template fetches templates stored in `script` tags with `js-tpl-<templateName>` class.
      * @class Skull.Template
      */
     Skull.Template = Skull.Abstract.extend(/** @lends Skull.Template.prototype */{
@@ -647,7 +654,7 @@
     });
 
     /**
-     * Extends given model class with all Skull.Model qualities. Useful when you need to use other models,
+     * Extends given model class with all {@link Skull.Model} qualities. Useful when you need to use other models,
      * e.g. http://afeld.github.io/backbone-nested/, but still want DI and registry.
      * @param {Function} baseModelClass
      * @returns {constructor}
@@ -745,8 +752,8 @@
             },
 
             /**
-             * @type Function
              * {@link Skull.Abstract#_parentResult}
+             * @type Function
              */
             _parentResult: Skull.Abstract.prototype._parentResult
         });
@@ -756,9 +763,9 @@
 
     /**
      * Skull.Model is basic model with few enhancements:
-     * # registry handling
-     * # meaningful cid
-     * # easier REST urls generation (when `resource` field provided)
+     * * registry handling
+     * * meaningful cid
+     * * easier REST urls generation (when `resource` field provided)
      * @class Skull.Model
      * @extends Backbone.Model
      */
@@ -766,7 +773,7 @@
 
 
     /**
-     * Extends given collection class with all Skull.Collection qualities. Useful when you need to use other collections,
+     * Extends given collection class with all {@link Skull.Collection} qualities. Useful when you need to use other collections,
      * but still need DI, registry and other stuff.
      * @param {Function} baseCollectionClass
      * @param {Function} [modelClass=SkullModel]
@@ -858,8 +865,8 @@
             },
 
             /**
-             * @type Function
              * {@link Skull.Abstract#_parentResult}
+             * @type Function
              */
             _parentResult: Skull.Abstract.prototype._parentResult
         });
@@ -869,9 +876,9 @@
 
     /**
      * Skull.Collection is a collection with few enhancements:
-     * # registry handling
-     * # meaningful cid
-     * # easier REST urls generation
+     * * registry handling
+     * * meaningful cid
+     * * easier REST urls generation
      * @class Skull.Collection
      * @extends Backbone.Collection
      */
@@ -902,7 +909,7 @@
     }
 
     /**
-     * Extends given view class with all Skull.View goodness.
+     * Extends given view class with all {@link Skull.View} goodness.
      * @param {Function} baseViewClass
      * @returns {constructor}
      */
@@ -912,17 +919,19 @@
                 template: 'template'
             },
 
-            // Whether this.$el will be completely replaced on rendering
+            /**
+             * Whether `this.$el` will be completely replaced on rendering
+             */
             replaceEl: false,
 
             /**
              * Automatically (and not, if you wish) creates and renders nested views.
              * Actually is a hash. Each field can take 4 forms:
-             * # '.js-someSelector': MyViewClass
-             * # '.js-anotherSelector': [MyViewClass, {answer: 42}] // second element will be passed to MyViewClass constructor
-             * # '.js-yetAnotherSelector': [MyViewClass, 'someMethodName'] // this['someMethodName'] will be called in proper context (`this`),
+             * * `'.js-someSelector': MyViewClass`
+             * * `'.js-anotherSelector': [MyViewClass, {answer: 42}]` // second element will be passed to MyViewClass constructor
+             * * `'.js-yetAnotherSelector': [MyViewClass, 'someMethodName']` // this['someMethodName'] will be called in proper context (`this`),
              *   and result will be passed to MyViewClass constructor
-             * # '.js-selectorToo': [MyViewClass, function () { return {answer: 42} }] // second element will be called in proper context,
+             * * `'.js-selectorToo': [MyViewClass, function () { return {answer: 42} }]` // second element will be called in proper context,
              *   and result will be passed to MyViewClass constructor
              *
              * All mentioned views will be placed to `this.children` hash for further managing during {@link Skull.View#onRender}.
@@ -935,7 +944,7 @@
              * Automatically (and not, if you wish) creates links to nodes inside your view. This is useful (and handy),
              * when you change some node's attributes several times during view's lifecycle.
              * Actually is a config in following form:
-             * somePrettyName: '.some .selector'
+             * `somePrettyName: '.some .selector'`
              *
              * All defined bits will be placed to `this.ui` hash for further managing during {@link Skull.View#onRender}.
              */
@@ -966,10 +975,10 @@
             },
 
             /**
-             * Shortcut for rendering this.tpl to this.$el (or instead of this element)
-             * @param {Skull.Model|Skull.Collection|Object} [tplData={}] if this parameter have .toTemplate method,
+             * Shortcut for rendering this.tpl to `this.$el` (or instead of this element)
+             * @param {Skull.Model|Skull.Collection|Object} [tplData={}] if this parameter have `.toTemplate` method,
              * it would be called and result will be passed instead
-             * @param {Boolean} [replace=false] whether replace whole $el or only replace it's .html()
+             * @param {Boolean} [replace=false] whether replace whole `$el` or only replace it's `.html()`
              */
             rr: function (tplData, replace) {
                 // work out parameters
@@ -1012,9 +1021,9 @@
             },
 
             /**
-             * Default rendering procedure: renders this.collection or this.model or {}.
+             * Default rendering procedure: renders `this.collection` or `this.model` or `{}`.
              * Feel free to override if needed.
-             * @return data passed to template
+             * @return {*} data passed to template
              */
             render: function () {
                 var uiState = this.collection || this.model || {};
@@ -1027,7 +1036,7 @@
             },
 
             /**
-             * Performs declarative bindings: __children__, __ui__, events
+             * Performs declarative bindings: `__children__`, `__ui__`, events.
              * Call this method when html is ready.
              */
             onRender: function () {
@@ -1112,7 +1121,7 @@
 
             /**
              * Registers nested view
-             * @param {String|Boolean} viewName
+             * @param {String} [viewName] defaults to `cid`, if falsy
              * @param {View} viewClass
              * @param {Object} options
              * @return {View}
@@ -1200,7 +1209,7 @@
             },
 
             /**
-             * @destructor
+             * Acts as `destructor`
              */
             remove: function () {
                 this.onBeforeRemove();
@@ -1208,8 +1217,8 @@
             },
 
             /**
-             * @type Function
              * {@link Skull.Abstract#_parentResult}
+             * @type Function
              */
             _parentResult: Skull.Abstract.prototype._parentResult
         });
@@ -1220,24 +1229,24 @@
     /**
      * Fused with automagic, Skull.View is highly configurable tool for creating and manipulating your app's views.
      * Core differences with vanilla Backbone.View is following:
-     * # Full-cycle nested views automated managing, {@link Skull.View#__children__}
-     * # Handy access to often used nodes inside view, {@link Skull.View#__ui__}
-     * # Preventing memory leaks and "zombie" callbacks with more thorough {@link Skull.View#remove} method
-     * @class {Skull.View}
+     * * Full-cycle nested views automated managing, {@link `Skull.View#__children__`}
+     * * Handy access to often used nodes inside view, {@link `Skull.View#__ui__`}
+     * * Preventing memory leaks and "zombie" callbacks with more thorough {@link Skull.View#remove} method
+     * @class Skull.View
      */
     Skull.View = Skull.extendView(Backbone.View);
 
     /**
      * Skull.Application is very basic sample of application.
      * It does several things:
-     * 1. creates registry and registers itself as 'app'
-     * 2. detects domain and other passes URL to UrlProvider
+     * 1. creates registry and registers itself as `'app'`
+     * 2. detects domain and other passes URL to {@link UrlProvider}
      * 3. instantiates syncer
      * 4. instantiates router
      * 5. Detects if debug mode is on
-     * 5. renders root view and starts Backbone.history, if autostart option passed
+     * 5. renders root view and starts Backbone.history, if `autostart` option passed
      *
-     * App dispatches route changes. Bind to 'path' event to handle them.
+     * App dispatches route changes. Bind to `path` event to handle them.
      * @class Skull.Application
      * @extends Skull.Observable
      */
@@ -1248,7 +1257,6 @@
             syncer: Skull.Syncer,
             template: Skull.Template,
 
-
             history: {
                 root: '/'
             }
@@ -1258,9 +1266,9 @@
          * @param options app options
          * @param {Skull.View} options.rootView Skull.View class, intended to be root view
          * @param {Backbone.Router} options.router Router class to be used
-         * @param {Skull.Syncer} [options.syncer=Skull.Syncer] Syncer class to be used
-         * @param {$|String|HTMLElement} [options.node='html'] root node for application; gets passed to options.rootView
-         * @param {String} [options.dataDomainSelector] selector to be passed to Skull.detectDomain
+         * @param {Skull.Syncer} [options.syncer=Skull.Syncer] {@link Skull.Syncer} class to be used
+         * @param {$|String|HTMLElement} [options.node='html'] root node for application; gets passed to `options.rootView`
+         * @param {String} [options.dataDomainSelector] selector to be passed to {@link Skull.detectDomain}
          * @param {Object} [options.urlOptions] options for {@link Skull.UrlProvider}.
          * @param {Boolean} [options.debug=false] Whether we are in debug mode, you can provide other ways for checking it
          *
@@ -1336,7 +1344,7 @@
 
         /**
          * Renders root view and starts up Backbone.history.
-         * Call this when your app is ready (or pass options.autostart to Skull.Application#initialize).
+         * Call this when your app is ready (or pass `options.autostart` to {@link Skull.Application#initialize}).
          * Feel free to override.
          */
         start: function () {
@@ -1359,7 +1367,9 @@
 
         /**
          * Primarily dispatches route change. Feel free to override.
-         * @param routeName
+         * @param {Backbone.Router} router router which fired event
+         * @param {String} routeName name of matched route
+         * @param {Object} params parameters parsed from route, if any
          */
         onRoute: function (router, routeName, params) {
             this.currentRoute = [routeName, params];

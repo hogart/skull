@@ -1,0 +1,19 @@
+{
+    "tags": {
+        "allowUnknownTags": false,
+        "dictionaries": ["jsdoc"]
+    },
+    "source": {
+        "include": "./src/Skull.js"
+    },
+    "plugins": ["plugins/markdown"],
+    "templates": {
+        "cleverLinks": true,
+        "monospaceLinks": false
+    },
+    "opts": {
+        "destination": "./docs/",
+        "package": "./package.json",
+        "readme": "./README.md"
+    }
+}
