@@ -14,20 +14,66 @@
     "jquery": "^1.11.2"
   },
   "license": "MIT",
+  "devDependencies": {
+    "chai": "^2.1.1",
+    "eslint": "^0.18.x",
+    "jquery-mockjax": "^1.6.1",
+    "jscs": "^1.12.x",
+    "mocha": "^2.2.x",
+    "opn": "^1.0.1"
+  },
   "directories": {
     "example": "example",
     "test": "tests"
   },
   "scripts": {
-    "test": "echo 'Open tests/index.html'"
+    "lint": "jscs . && eslint .",
+    "unit": "opn ./mocha/index.html",
+    "test": "npm run lint && npm run unit"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/hogart/skull.git"
   },
   "author": "Konstantin Kitmanov <doctor.hogart@gmail.com>",
-
   "bugs": {
     "url": "https://github.com/hogart/skull/issues"
+  },
+  "jscsConfig": {
+    "requireSpaceAfterKeywords": [
+      "if",
+      "for",
+      "while",
+      "do",
+      "switch",
+      "try",
+      "catch"
+    ],
+    "disallowKeywordsOnNewLine": [
+      "else"
+    ],
+    "disallowSpaceBeforePostfixUnaryOperators": true,
+    "disallowMultipleLineStrings": true,
+    "requireSpaceBeforeBinaryOperators": true,
+    "requireSpaceAfterBinaryOperators": true,
+    "disallowSpaceAfterPrefixUnaryOperators": true,
+    "excludeFiles": [
+      "node_modules"
+    ]
+  },
+  "eslintConfig": {
+    "env": {
+      "browser": true
+    },
+    "rules": {
+      "quotes": [
+        2,
+        "single",
+        "avoid-escape"
+      ],
+      "eol-last": [
+        0
+      ]
+    }
   }
 }
