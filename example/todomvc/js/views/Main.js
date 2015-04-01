@@ -44,7 +44,7 @@ define(
                 }
             },
 
-            toggleAllComplete: function (evt) {
+            toggleAllComplete: function (event) {
                 var isCompleted = this.ui.toggleAll.prop('checked');
 
                 this.collection.markCompleted(isCompleted);

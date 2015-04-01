@@ -1,20 +1,19 @@
-/* eslint-env mocha */
-/* global mocha, chai, fnd */
+/* eslint-env mocha, browser */
+/* global mocha, chai, Skull */
 (function (mocha, assert, Skull) {
     'use strict';
 
     var UrlProvider = Skull.UrlProvider;
     var provider;
 
-    
     suite('.UrlProvider', function () {
-        setup(function () { 
-            provider = new UrlProvider({}); 
+        setup(function () {
+            provider = new UrlProvider({});
         });
-        teardown(function () { 
-            provider = null; 
+        teardown(function () {
+            provider = null;
         });
-        
+
         test('prefix and domain', function () {
             provider.set({ host: 'example.com', prefix: 'rest' });
             assert.equal(provider.getApiUrl(), '//example.com/rest/');

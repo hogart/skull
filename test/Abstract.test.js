@@ -1,5 +1,5 @@
-/* eslint-env mocha */
-/* global mocha, chai, fnd */
+/* eslint-env mocha, browser */
+/* global mocha, chai, Skull */
 (function (mocha, assert, Skull) {
     'use strict';
 
@@ -15,10 +15,10 @@
 
         test('initialize called with same params as passed to constructor', function () {
             paramsAmount = 3;
-            new MyClass('firstArg', 'secondArg', 'third');
+            new MyClass('firstArg', 'secondArg', 'third'); // eslint-disable-line no-new
 
             paramsAmount = 0;
-            new MyClass();
+            new MyClass(); // eslint-disable-line no-new
         });
     });
 })(mocha, chai.assert, Skull);

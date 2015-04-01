@@ -1,5 +1,5 @@
-/* eslint-env mocha */
-/* global mocha, chai, fnd */
+/* eslint-env mocha, browser */
+/* global mocha, chai, Skull, _ */
 (function (mocha, assert, Skull) {
     'use strict';
 
@@ -14,7 +14,7 @@
     function createModel(options) {
         return new Model({}, _.extend({}, passReg, options));
     }
-    
+
     suite('.Model', function () {
         test('`silentSet` method doesn\'t triggers `change` event', function () {
             var model = new Model({}, passReg);

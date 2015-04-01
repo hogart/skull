@@ -1,5 +1,5 @@
-/* eslint-env mocha */
-/* global mocha, chai, fnd */
+/* eslint-env mocha, browser, jquery */
+/* global mocha, chai, Skull */
 (function (mocha, assert, Skull) {
     'use strict';
 
@@ -11,12 +11,12 @@
         tplNode.appendTo('body');
         return tplNode;
     }
-    
+
     suite('.Template', function () {
         teardown(function () {
             tplNode.remove();
         });
-        
+
         test('Finds correct node by template name and throws exception when can\'t do that', function () {
             createTemplate('test', '');
             var template = new Template({}),
@@ -101,13 +101,13 @@
                 var rendered = template.tmpl('test', {});
                 assert.equal('42', rendered, 'Return rendered template with two argument passed');
 
-                function cbCompiled(template) {
-                    assert.isFunction(template, 'Calls back with compiled template on 3 args, 2nd is falsie');
+                function cbCompiled(compiledTemplate) {
+                    assert.isFunction(compiledTemplate, 'Calls back with compiled template on 3 args, 2nd is falsie');
                 }
                 template.tmpl('test', null, cbCompiled);
 
-                function cbRendered(rendered) {
-                    assert.equal('42', rendered, 'Calls back with rendered template on 3 args');
+                function cbRendered(renderedTemplate) {
+                    assert.equal('42', renderedTemplate, 'Calls back with rendered template on 3 args');
                 }
                 template.tmpl('test', {}, cbRendered);
             }
@@ -135,6 +135,6 @@
 
             tpl1.remove();
         });
-        
+
     });
 })(mocha, chai.assert, Skull);

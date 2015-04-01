@@ -1,17 +1,16 @@
-/* eslint-env mocha */
-/* global mocha, chai, fnd */
+/* eslint-env mocha, browser */
+/* global mocha, chai, Skull, _ */
 (function (mocha, assert, Skull) {
     'use strict';
-    
+
     var ResourceRegistry = Skull.ResourceRegistry;
     var processRegistry = ResourceRegistry.processRegistry;
     var registry = new ResourceRegistry();
-    var option = {answer: 42};
 
     function testFactory (value) {
         return value;
     }
-    
+
     suite('.ResourceRegistry', function () {
         test('registry stores and fetches plain resources', function () {
             var resName = 'testRes';
@@ -70,6 +69,8 @@
         });
 
         suite('Various form of __registry__ processing', function () {
+            var option = {answer: 42};
+
             setup(function () {
                 registry.register('answer', 42);
                 registry.register('factory', function (val) { return val; }, option);

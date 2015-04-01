@@ -1,5 +1,5 @@
-/* eslint-env mocha */
-/* global mocha, chai, fnd */
+/* eslint-env mocha, browser, jquery */
+/* global mocha, chai, Skull, _ */
 (function (mocha, assert, Skull) {
     'use strict';
 
@@ -104,8 +104,8 @@
 
                 sView.render();
 
-                assert.ok(sView.$('.js-replacer').length)
-            })
-        })
+                assert.ok(sView.$('.js-replacer').length);
+            });
+        });
     });
 })(mocha, chai.assert, Skull);

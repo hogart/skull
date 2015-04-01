@@ -1,5 +1,6 @@
 (function(root, factory) {
     'use strict';
+    /* global define, module, exports, require */
     if (typeof define === 'function' && define.amd) {
         // AMD
         define(['underscore', 'jquery', 'backbone', 'exports'], function(_, $, Backbone, exports) {
@@ -170,7 +171,7 @@
                         fabricFn = fabricConfig[0],
                         fabricPreOptions = fabricConfig[1],
                         params = _.extend({}, fabricPreOptions, options),
-                        cacheKey = JSON.stringify(params, function (key, value) {
+                        cacheKey = JSON.stringify(params, function (jsonKey, value) {
                             if (value instanceof Skull.ResourceRegistry) { // do not stringify ResourceRegistry instances, they tend to have circular references
                                 return undefined;
                             } else {
@@ -215,7 +216,7 @@
                     };
 
                 if (_.isArray(items)) {
-                    _.each(items, function (resourceRequest, index) {
+                    _.each(items, function (resourceRequest) {
                         if (!_.isArray(resourceRequest)) {
                             resourceRequest = [resourceRequest];
                         }
@@ -355,7 +356,7 @@
             'create': 'POST',
             'update': 'PUT',
             'delete': 'DELETE',
-            'read':   'GET',
+            'read': 'GET',
             'patch': 'PATCH'
         },
 
@@ -428,7 +429,7 @@
                     params.data._method = type;
                 }
                 var beforeSend = options.beforeSend;
-                options.beforeSend = function(xhr) {
+                options.beforeSend = function (xhr) { // eslint-disable-line no-shadow
                     xhr.setRequestHeader('X-HTTP-Method-Override', type);
                     if (beforeSend) {
                         return beforeSend.apply(this, arguments);
@@ -444,7 +445,7 @@
             params = this._authorize(params);
 
             var success = options.success;
-            options.success = function(resp, status, xhr) {
+            options.success = function (resp, status, xhr) { // eslint-disable-line no-shadow
                 if (success) {
                     success(resp, status, xhr);
                 }
@@ -452,7 +453,7 @@
             };
 
             var error = options.error;
-            options.error = function(xhr, status, thrown) {
+            options.error = function (xhr/*, status, thrown*/) { // eslint-disable-line no-shadow
                 if (error) {
                     error(model, xhr, options);
                 }
@@ -553,7 +554,9 @@
                     node = node.eq(0);
 
                     if (this.params.debug) {
+                        /* eslint-disable no-console */
                         console.warn('Too many template nodes: ' + fullSelector);
+                        /* eslint-enable no-console */
                     }
                 }
             } else {
@@ -634,7 +637,9 @@
             if (arguments.length > 1 && tplData) { // should return already rendered template
 
                 // specify context information, e.g. l10n string, common application data…
-                this.params.context && (tplData.__context__ = this.params.context);
+                if (this.params.context) {
+                    (tplData.__context__ = this.params.context);
+                }
 
                 tpl = tpl(tplData);
 
@@ -889,12 +894,12 @@
      * Recursively replaces tokens with values from `ctx`.
      * @example unfold('$test $test2', false, {test: 'simple string', test2: 'string with $catch22', catch22: 'catch'}) === 'simple string string with catch'
      * @param {String} src
-     * @param {RegExp} [tokenRe=/\$([^\., ]+)/mg]
+     * @param {RegExp|Boolean} [tokenRe=unfold.tokenRe]
      * @param {Object} [ctx=this]
      * @returns {String}
      */
     function unfold (src, tokenRe, ctx) {
-        tokenRe = (tokenRe || /\$([^\., ]+)/mg);
+        tokenRe = (tokenRe || unfold.tokenRe);
         ctx = (ctx || this); // jshint ignore:line
 
         var replace = function (match, key) {
@@ -907,6 +912,8 @@
 
         return src;
     }
+
+    unfold.tokenRe = /\$([^\., ]+)/mg;
 
     /**
      * Extends given view class with all {@link Skull.View} goodness.
@@ -1054,7 +1061,9 @@
             },
 
             _ensureUI: function (ui) {
-                ui || (ui = _.result(this, '__ui__'));
+                if (!ui) {
+                    ui = _.result(this, '__ui__');
+                }
 
                 if (!ui) {
                     return; // nothing to do here anymore
@@ -1068,7 +1077,9 @@
             },
 
             delegateEvents: function (events) {
-                events || (events = _.result(this, 'events'));
+                if (!events) {
+                    events = _.result(this, 'events');
+                }
 
                 var ui = _.result(this, '__ui__');
 
@@ -1086,17 +1097,17 @@
             },
 
             _ensureSubviews: function (children, options) {
-                children || (children = _.result(this, '__children__'));
-
                 if (!children) {
-                    return; // nothing to do here anymore
+                    children = _.result(this, '__children__');
                 }
 
-                var renderView = function (viewClass, selector) {
-                    this._renderView(viewClass, selector, options);
-                };
+                if (children) {
+                    var renderView = function (viewClass, selector) {
+                        this._renderView(viewClass, selector, options);
+                    };
 
-                _.each(children, renderView, this);
+                    _.each(children, renderView, this);
+                }
             },
 
             _renderView: function (viewClass, selector, options) {
@@ -1104,8 +1115,13 @@
                     el: selector
                 };
 
-                this.model && (params.model = this.model);
-                this.collection && (params.collection = this.collection);
+                if (this.model) {
+                    params.model = this.model;
+                }
+
+                if (this.collection) {
+                    params.collection = this.collection;
+                }
 
                 params.viewName = selector;
                 if (options) {
@@ -1160,7 +1176,7 @@
                     throw 'Invalid class when registering child: ' + viewName;
                 }
 
-                var child = new viewClass(params); // jshint ignore:line
+                var child = new viewClass(params); // eslint-disable-line new-cap
                 if (viewName) {
                     child.cid = viewName;
                 } else {
@@ -1304,7 +1320,9 @@
             regComp('template');
 
             // start app, if we should
-            this.params.autostart && this.start();
+            if (this.params.autostart) {
+                this.start();
+            }
         },
 
         /**
@@ -1319,7 +1337,7 @@
             if (_.isFunction(component)) {
                 return this.registry.register(
                     componentName,
-                    new component({ // jshint ignore:line
+                    new component({ // eslint-disable-line new-cap
                         registry: this.registry
                     })
                 );
@@ -1356,7 +1374,7 @@
 
             this.registry.register(
                 'rootView',
-                new this.params.rootView({
+                new this.params.rootView({ // eslint-disable-line new-cap
                     el: this.params.node,
                     registry: this.registry
                 })

@@ -1,5 +1,5 @@
-/* eslint-env mocha */
-/* global mocha, chai, fnd */
+/* eslint-env mocha, browser */
+/* global mocha, chai, Skull, _ */
 (function (mocha, assert, Skull) {
     'use strict';
 

@@ -3,6 +3,7 @@
 
 (function (root, factory) {
     'use strict';
+    /* global define, module, exports, require */
     var depNames = ['Skull', 'underscore', 'jquery'];
 
     if (typeof define === 'function' && define.amd) {
@@ -47,7 +48,7 @@
         sync: function (method, model, options) {
             var resp;
             var errorMessage;
-            var syncDfd = $.Deferred();
+            var syncDfd = new $.Deferred();
 
             try {
                 switch (method) {
@@ -251,7 +252,7 @@
          * @param options
          */
         instantiate: function (options) {
-            return new this (options);
+            return new this(options);
         },
 
         /**
