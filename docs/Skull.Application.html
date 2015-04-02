@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Application - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Skull.Abstract.html">Abstract</a><ul class='methods'><li data-type='method'><a href="Skull.Abstract.html#_parentResult">_parentResult</a></li><li data-type='method'><a href="Skull.Abstract.html#initialize">initialize</a></li></ul></li><li><a href="Skull.Application.html">Application</a><ul class='methods'><li data-type='method'><a href="Skull.Application.html#_parentResult">_parentResult</a></li><li data-type='method'><a href="Skull.Application.html#_registerComponent">_registerComponent</a></li><li data-type='method'><a href="Skull.Application.html#initialize">initialize</a></li><li data-type='method'><a href="Skull.Application.html#onRoute">onRoute</a></li><li data-type='method'><a href="Skull.Application.html#start">start</a></li></ul></li><li><a href="Skull.Collection.html">Collection</a><ul class='methods'><li data-type='method'><a href="Skull.Collection.html#clone">clone</a></li><li data-type='method'><a href="Skull.Collection.html#sync">sync</a></li><li data-type='method'><a href="Skull.Collection.html#toTemplate">toTemplate</a></li></ul></li><li><a href="Skull.Model.html">Model</a><ul class='methods'><li data-type='method'><a href="Skull.Model.html#clone">clone</a></li><li data-type='method'><a href="Skull.Model.html#silentSet">silentSet</a></li><li data-type='method'><a href="Skull.Model.html#sync">sync</a></li><li data-type='method'><a href="Skull.Model.html#toTemplate">toTemplate</a></li></ul></li><li><a href="Skull.Observable.html">Observable</a><ul class='methods'><li data-type='method'><a href="Skull.Observable.html#_parentResult">_parentResult</a></li><li data-type='method'><a href="Skull.Observable.html#initialize">initialize</a></li></ul></li><li><a href="Skull.ResourceRegistry.html">ResourceRegistry</a><ul class='methods'><li data-type='method'><a href="Skull.ResourceRegistry.html#.processRegistry">processRegistry</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#_parentResult">_parentResult</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#acquire">acquire</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#initialize">initialize</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#register">register</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#unregister">unregister</a></li></ul></li><li><a href="Skull.Syncer.html">Syncer</a><ul class='methods'><li data-type='method'><a href="Skull.Syncer.html#_authorize">_authorize</a></li><li data-type='method'><a href="Skull.Syncer.html#_urlError">_urlError</a></li><li data-type='method'><a href="Skull.Syncer.html#ajax">ajax</a></li><li data-type='method'><a href="Skull.Syncer.html#sync">sync</a></li></ul></li><li><a href="Skull.Template.html">Template</a><ul class='methods'><li data-type='method'><a href="Skull.Template.html#_compileTemplate">_compileTemplate</a></li><li data-type='method'><a href="Skull.Template.html#_getCompiledTemplate">_getCompiledTemplate</a></li><li data-type='method'><a href="Skull.Template.html#_getTemplate">_getTemplate</a></li><li data-type='method'><a href="Skull.Template.html#_getTemplateNode">_getTemplateNode</a></li><li data-type='method'><a href="Skull.Template.html#_preprocessTemplate">_preprocessTemplate</a></li><li data-type='method'><a href="Skull.Template.html#initialize">initialize</a></li><li data-type='method'><a href="Skull.Template.html#tmpl">tmpl</a></li></ul></li><li><a href="Skull.UrlProvider.html">UrlProvider</a><ul class='methods'><li data-type='method'><a href="Skull.UrlProvider.html#getApiPath">getApiPath</a></li><li data-type='method'><a href="Skull.UrlProvider.html#getApiUrl">getApiUrl</a></li><li data-type='method'><a href="Skull.UrlProvider.html#set">set</a></li></ul></li><li><a href="Skull.View.html">View</a><ul class='methods'><li data-type='method'><a href="Skull.View.html#onBeforeRemove">onBeforeRemove</a></li><li data-type='method'><a href="Skull.View.html#onRender">onRender</a></li><li data-type='method'><a href="Skull.View.html#registerChild">registerChild</a></li><li data-type='method'><a href="Skull.View.html#remove">remove</a></li><li data-type='method'><a href="Skull.View.html#render">render</a></li><li data-type='method'><a href="Skull.View.html#rr">rr</a></li><li data-type='method'><a href="Skull.View.html#unregisterChild">unregisterChild</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="Skull.html">Skull</a><ul class='methods'><li data-type='method'><a href="Skull.html#.detectDomain">detectDomain</a></li><li data-type='method'><a href="Skull.html#.extendCollection">extendCollection</a></li><li data-type='method'><a href="Skull.html#.extendModel">extendModel</a></li><li data-type='method'><a href="Skull.html#.extendView">extendView</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Application</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="Skull.html">Skull</a>.</span>
+        
+        Application
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    <h4 class="name" id="Application"><span class="type-signature"></span>new Application<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Skull.Application is very basic sample of application.
+It does several things:</p>
+<ol>
+<li>creates registry and registers itself as <code>'app'</code></li>
+<li>detects domain and other passes URL to <code>UrlProvider</code></li>
+<li>instantiates syncer</li>
+<li>instantiates router</li>
+<li>Detects if debug mode is on</li>
+<li>renders root view and starts Backbone.history, if <code>autostart</code> option passed</li>
+</ol>
+<p>App dispatches route changes. Bind to <code>path</code> event to handle them.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line1255">line 1255</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="Skull.Observable.html">Skull.Observable</a></li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="_parentResult"><span class="type-signature">(protected) </span>_parentResult<span class="signature">(cls, propertyName)</span><span class="type-signature"> &rarr; {*}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Much like a <code>_.result</code>, but ascending to parent</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cls</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>class derived in usual Skull paradigm (i.e. with <code>__super__</code> property pointing to parent's prototype)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>propertyName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Skull.Abstract.html#_parentResult">Skull.Abstract#_parentResult</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line85">line 85</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Most of the times it is Object</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="_registerComponent"><span class="type-signature">(protected) </span>_registerComponent<span class="signature">(componentName)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Creates application component and registers it, following config</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>componentName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>should be present in params passed to application</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line1334">line 1334</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>instance of component</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="initialize"><span class="type-signature"></span>initialize<span class="signature">(options)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>app options</p>
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>rootView</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Skull.View.html">Skull.View</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Skull.View class, intended to be root view</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>router</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Backbone.Router</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>Router class to be used</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>syncer</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Skull.Syncer.html">Skull.Syncer</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    Skull.Syncer
+                
+                </td>
+            
+
+            <td class="description last"><p><a href="Skull.Syncer.html"><code>Skull.Syncer</code></a> class to be used</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>node</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">$</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">HTMLElement</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    'html'
+                
+                </td>
+            
+
+            <td class="description last"><p>root node for application; gets passed to <code>options.rootView</code></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dataDomainSelector</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>selector to be passed to <a href="Skull.html#.detectDomain"><code>Skull.detectDomain</code></a></p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>urlOptions</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>options for <a href="Skull.UrlProvider.html"><code>Skull.UrlProvider</code></a>.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>debug</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Whether we are in debug mode, you can provide other ways for checking it</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>autostart</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    false
+                
+                </td>
+            
+
+            <td class="description last"><p>Whether application should start right when instantiated</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Skull.Observable.html#initialize">Skull.Observable#initialize</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line1293">line 1293</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="onRoute"><span class="type-signature"></span>onRoute<span class="signature">(router, routeName, params)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Primarily dispatches route change. Feel free to override.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>router</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Backbone.Router</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>router which fired event</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>routeName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>name of matched route</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>params</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>parameters parsed from route, if any</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line1392">line 1392</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="start"><span class="type-signature"></span>start<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Renders root view and starts up Backbone.history.
+Call this when your app is ready (or pass <code>options.autostart</code> to <a href="Skull.Application.html#initialize"><code>Skull.Application#initialize</code></a>).
+Feel free to override.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line1368">line 1368</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-beta3</a> on Thu Apr 02 2015 22:22:18 GMT+0700 (ICT) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

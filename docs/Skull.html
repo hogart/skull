@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Skull - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Skull.Abstract.html">Abstract</a><ul class='methods'><li data-type='method'><a href="Skull.Abstract.html#_parentResult">_parentResult</a></li><li data-type='method'><a href="Skull.Abstract.html#initialize">initialize</a></li></ul></li><li><a href="Skull.Application.html">Application</a><ul class='methods'><li data-type='method'><a href="Skull.Application.html#_parentResult">_parentResult</a></li><li data-type='method'><a href="Skull.Application.html#_registerComponent">_registerComponent</a></li><li data-type='method'><a href="Skull.Application.html#initialize">initialize</a></li><li data-type='method'><a href="Skull.Application.html#onRoute">onRoute</a></li><li data-type='method'><a href="Skull.Application.html#start">start</a></li></ul></li><li><a href="Skull.Collection.html">Collection</a><ul class='methods'><li data-type='method'><a href="Skull.Collection.html#clone">clone</a></li><li data-type='method'><a href="Skull.Collection.html#sync">sync</a></li><li data-type='method'><a href="Skull.Collection.html#toTemplate">toTemplate</a></li></ul></li><li><a href="Skull.Model.html">Model</a><ul class='methods'><li data-type='method'><a href="Skull.Model.html#clone">clone</a></li><li data-type='method'><a href="Skull.Model.html#silentSet">silentSet</a></li><li data-type='method'><a href="Skull.Model.html#sync">sync</a></li><li data-type='method'><a href="Skull.Model.html#toTemplate">toTemplate</a></li></ul></li><li><a href="Skull.Observable.html">Observable</a><ul class='methods'><li data-type='method'><a href="Skull.Observable.html#_parentResult">_parentResult</a></li><li data-type='method'><a href="Skull.Observable.html#initialize">initialize</a></li></ul></li><li><a href="Skull.ResourceRegistry.html">ResourceRegistry</a><ul class='methods'><li data-type='method'><a href="Skull.ResourceRegistry.html#.processRegistry">processRegistry</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#_parentResult">_parentResult</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#acquire">acquire</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#initialize">initialize</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#register">register</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#unregister">unregister</a></li></ul></li><li><a href="Skull.Syncer.html">Syncer</a><ul class='methods'><li data-type='method'><a href="Skull.Syncer.html#_authorize">_authorize</a></li><li data-type='method'><a href="Skull.Syncer.html#_urlError">_urlError</a></li><li data-type='method'><a href="Skull.Syncer.html#ajax">ajax</a></li><li data-type='method'><a href="Skull.Syncer.html#sync">sync</a></li></ul></li><li><a href="Skull.Template.html">Template</a><ul class='methods'><li data-type='method'><a href="Skull.Template.html#_compileTemplate">_compileTemplate</a></li><li data-type='method'><a href="Skull.Template.html#_getCompiledTemplate">_getCompiledTemplate</a></li><li data-type='method'><a href="Skull.Template.html#_getTemplate">_getTemplate</a></li><li data-type='method'><a href="Skull.Template.html#_getTemplateNode">_getTemplateNode</a></li><li data-type='method'><a href="Skull.Template.html#_preprocessTemplate">_preprocessTemplate</a></li><li data-type='method'><a href="Skull.Template.html#initialize">initialize</a></li><li data-type='method'><a href="Skull.Template.html#tmpl">tmpl</a></li></ul></li><li><a href="Skull.UrlProvider.html">UrlProvider</a><ul class='methods'><li data-type='method'><a href="Skull.UrlProvider.html#getApiPath">getApiPath</a></li><li data-type='method'><a href="Skull.UrlProvider.html#getApiUrl">getApiUrl</a></li><li data-type='method'><a href="Skull.UrlProvider.html#set">set</a></li></ul></li><li><a href="Skull.View.html">View</a><ul class='methods'><li data-type='method'><a href="Skull.View.html#onBeforeRemove">onBeforeRemove</a></li><li data-type='method'><a href="Skull.View.html#onRender">onRender</a></li><li data-type='method'><a href="Skull.View.html#registerChild">registerChild</a></li><li data-type='method'><a href="Skull.View.html#remove">remove</a></li><li data-type='method'><a href="Skull.View.html#render">render</a></li><li data-type='method'><a href="Skull.View.html#rr">rr</a></li><li data-type='method'><a href="Skull.View.html#unregisterChild">unregisterChild</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="Skull.html">Skull</a><ul class='methods'><li data-type='method'><a href="Skull.html#.detectDomain">detectDomain</a></li><li data-type='method'><a href="Skull.html#.extendCollection">extendCollection</a></li><li data-type='method'><a href="Skull.html#.extendModel">extendModel</a></li><li data-type='method'><a href="Skull.html#.extendView">extendView</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Skull</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        Skull
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-author">Author:</dt>
+    <dd class="tag-author">
+        <ul>
+            <li>&lt;p>Konstantin Kitmanov [doctor.hogart@gmail.com]&lt;/p></li>
+        </ul>
+    </dd>
+    
+
+    
+
+    
+    <dt class="tag-license">License:</dt>
+    <dd class="tag-license"><ul class="dummy"><li>MIT</li></ul></dd>
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line38">line 38</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Classes</h3>
+
+        <dl>
+            <dt><a href="Skull.Abstract.html">Abstract</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Skull.Application.html">Application</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Skull.Collection.html">Collection</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Skull.Collection.html">Collection</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Skull.Model.html">Model</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Skull.Model.html">Model</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Skull.Observable.html">Observable</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Skull.ResourceRegistry.html">ResourceRegistry</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Skull.Syncer.html">Syncer</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Skull.Syncer.html">Syncer</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Skull.Template.html">Template</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Skull.UrlProvider.html">UrlProvider</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Skull.View.html">View</a></dt>
+            <dd></dd>
+        
+            <dt><a href="Skull.View.html">View</a></dt>
+            <dd></dd>
+        </dl>
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".detectDomain"><span class="type-signature">(static) </span>detectDomain<span class="signature">(attributeName<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Detects host and protocol for your API from <code>script[data-api-domain=&quot;http://my.api.example.com&quot;]</code></p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>attributeName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    'data-api-domain'
+                
+                </td>
+            
+
+            <td class="description last"><p>Definitive attribute name</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line244">line 244</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".extendCollection"><span class="type-signature">(static) </span>extendCollection<span class="signature">(baseCollectionClass, modelClass<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {constructor}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Extends given collection class with all <a href="Skull.Collection.html"><code>Skull.Collection</code></a> qualities. Useful when you need to use other collections,
+but still need DI, registry and other stuff.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>baseCollectionClass</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>modelClass</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    SkullModel
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line787">line 787</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">constructor</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".extendModel"><span class="type-signature">(static) </span>extendModel<span class="signature">(baseModelClass)</span><span class="type-signature"> &rarr; {constructor}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Extends given model class with all <a href="Skull.Model.html"><code>Skull.Model</code></a> qualities. Useful when you need to use other models,
+e.g. http://afeld.github.io/backbone-nested/, but still want DI and registry.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>baseModelClass</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line667">line 667</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">constructor</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id=".extendView"><span class="type-signature">(static) </span>extendView<span class="signature">(baseViewClass)</span><span class="type-signature"> &rarr; {constructor}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Extends given view class with all <a href="Skull.View.html"><code>Skull.View</code></a> goodness.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>baseViewClass</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line923">line 923</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">constructor</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-beta3</a> on Thu Apr 02 2015 22:22:18 GMT+0700 (ICT) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

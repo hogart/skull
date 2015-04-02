@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>ResourceRegistry - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="Skull.Abstract.html">Abstract</a><ul class='methods'><li data-type='method'><a href="Skull.Abstract.html#_parentResult">_parentResult</a></li><li data-type='method'><a href="Skull.Abstract.html#initialize">initialize</a></li></ul></li><li><a href="Skull.Application.html">Application</a><ul class='methods'><li data-type='method'><a href="Skull.Application.html#_parentResult">_parentResult</a></li><li data-type='method'><a href="Skull.Application.html#_registerComponent">_registerComponent</a></li><li data-type='method'><a href="Skull.Application.html#initialize">initialize</a></li><li data-type='method'><a href="Skull.Application.html#onRoute">onRoute</a></li><li data-type='method'><a href="Skull.Application.html#start">start</a></li></ul></li><li><a href="Skull.Collection.html">Collection</a><ul class='methods'><li data-type='method'><a href="Skull.Collection.html#clone">clone</a></li><li data-type='method'><a href="Skull.Collection.html#sync">sync</a></li><li data-type='method'><a href="Skull.Collection.html#toTemplate">toTemplate</a></li></ul></li><li><a href="Skull.Model.html">Model</a><ul class='methods'><li data-type='method'><a href="Skull.Model.html#clone">clone</a></li><li data-type='method'><a href="Skull.Model.html#silentSet">silentSet</a></li><li data-type='method'><a href="Skull.Model.html#sync">sync</a></li><li data-type='method'><a href="Skull.Model.html#toTemplate">toTemplate</a></li></ul></li><li><a href="Skull.Observable.html">Observable</a><ul class='methods'><li data-type='method'><a href="Skull.Observable.html#_parentResult">_parentResult</a></li><li data-type='method'><a href="Skull.Observable.html#initialize">initialize</a></li></ul></li><li><a href="Skull.ResourceRegistry.html">ResourceRegistry</a><ul class='methods'><li data-type='method'><a href="Skull.ResourceRegistry.html#.processRegistry">processRegistry</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#_parentResult">_parentResult</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#acquire">acquire</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#initialize">initialize</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#register">register</a></li><li data-type='method'><a href="Skull.ResourceRegistry.html#unregister">unregister</a></li></ul></li><li><a href="Skull.Syncer.html">Syncer</a><ul class='methods'><li data-type='method'><a href="Skull.Syncer.html#_authorize">_authorize</a></li><li data-type='method'><a href="Skull.Syncer.html#_urlError">_urlError</a></li><li data-type='method'><a href="Skull.Syncer.html#ajax">ajax</a></li><li data-type='method'><a href="Skull.Syncer.html#sync">sync</a></li></ul></li><li><a href="Skull.Template.html">Template</a><ul class='methods'><li data-type='method'><a href="Skull.Template.html#_compileTemplate">_compileTemplate</a></li><li data-type='method'><a href="Skull.Template.html#_getCompiledTemplate">_getCompiledTemplate</a></li><li data-type='method'><a href="Skull.Template.html#_getTemplate">_getTemplate</a></li><li data-type='method'><a href="Skull.Template.html#_getTemplateNode">_getTemplateNode</a></li><li data-type='method'><a href="Skull.Template.html#_preprocessTemplate">_preprocessTemplate</a></li><li data-type='method'><a href="Skull.Template.html#initialize">initialize</a></li><li data-type='method'><a href="Skull.Template.html#tmpl">tmpl</a></li></ul></li><li><a href="Skull.UrlProvider.html">UrlProvider</a><ul class='methods'><li data-type='method'><a href="Skull.UrlProvider.html#getApiPath">getApiPath</a></li><li data-type='method'><a href="Skull.UrlProvider.html#getApiUrl">getApiUrl</a></li><li data-type='method'><a href="Skull.UrlProvider.html#set">set</a></li></ul></li><li><a href="Skull.View.html">View</a><ul class='methods'><li data-type='method'><a href="Skull.View.html#onBeforeRemove">onBeforeRemove</a></li><li data-type='method'><a href="Skull.View.html#onRender">onRender</a></li><li data-type='method'><a href="Skull.View.html#registerChild">registerChild</a></li><li data-type='method'><a href="Skull.View.html#remove">remove</a></li><li data-type='method'><a href="Skull.View.html#render">render</a></li><li data-type='method'><a href="Skull.View.html#rr">rr</a></li><li data-type='method'><a href="Skull.View.html#unregisterChild">unregisterChild</a></li></ul></li></ul><h3>Namespaces</h3><ul><li><a href="Skull.html">Skull</a><ul class='methods'><li data-type='method'><a href="Skull.html#.detectDomain">detectDomain</a></li><li data-type='method'><a href="Skull.html#.extendCollection">extendCollection</a></li><li data-type='method'><a href="Skull.html#.extendModel">extendModel</a></li><li data-type='method'><a href="Skull.html#.extendView">extendView</a></li></ul></li></ul>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">ResourceRegistry</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+            <span class="ancestors"><a href="Skull.html">Skull</a>.</span>
+        
+        ResourceRegistry
+        </h2>
+        
+            <div class="class-description"><p>Skull.ResourceRegistry</p></div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    <h4 class="name" id="ResourceRegistry"><span class="type-signature"></span>new ResourceRegistry<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Simple implementation of Registry pattern. Can store plain values or factories.
+Stored factory gets memoized — that is, returns same object given the same parameters. Memoizing assumes factory is pure function.</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line113">line 113</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="Skull.Abstract.html">Skull.Abstract</a></li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id=".processRegistry"><span class="type-signature">(static) </span>processRegistry<span class="signature">()</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Iterates over <code>context.__registry__</code>, acquiring dependencies from it via <code>context.registry.acquire</code>.
+<code>__registry__</code> can be hash or array (or a function returning such hash or array).</p>
+<p>Hash keys are keys to inject acquired resources, and values are keys to acquire. If value is array, than first element is key, second is params fo factory.
+Array is simplified form of hash. Following hash and array are equivalent:</p>
+<pre class="prettyprint source"><code>{
+ 'res1': 'res1',
+ factory1: ['factory1', {param: 42}]
+}, // and
+['res1', ['factory1', {param: 42}]]</code></pre>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line209">line 209</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="_parentResult"><span class="type-signature">(protected) </span>_parentResult<span class="signature">(cls, propertyName)</span><span class="type-signature"> &rarr; {*}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Much like a <code>_.result</code>, but ascending to parent</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cls</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>class derived in usual Skull paradigm (i.e. with <code>__super__</code> property pointing to parent's prototype)</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>propertyName</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Skull.Abstract.html#_parentResult">Skull.Abstract#_parentResult</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line85">line 85</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>Most of the times it is Object</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="acquire"><span class="type-signature"></span>acquire<span class="signature">(key, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {*}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Returns requested object from registry</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>if present, factory would be called instead of fetching plain value</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line167">line 167</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">*</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="initialize"><span class="type-signature"></span>initialize<span class="signature">(options)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Skull.Abstract.html#initialize">Skull.Abstract#initialize</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line68">line 68</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="register"><span class="type-signature"></span>register<span class="signature">(key, value, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Object}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Registers object or factory by given <code>key</code>. Pass third argument to store factory.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>value</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line133">line 133</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+    <div class="param-desc">
+    
+        <p>TypeError when not a function passed as factory</p>
+    
+    </div>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    <p>what was stored</p>
+</div>
+
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="unregister"><span class="type-signature"></span>unregister<span class="signature">(key, isFactory)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Deletes value from registry</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isFactory</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>if true, deletes factory</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Skull.js.html">Skull.js</a>, <a href="Skull.js.html#line152">line 152</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.0-beta3</a> on Thu Apr 02 2015 22:22:18 GMT+0700 (ICT) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
