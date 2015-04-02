@@ -13,7 +13,7 @@
     },
     "opts": {
         "destination": "./docs/",
-        "package": "./package.json",
-        "readme": "./README.md"
+        "readme": "./README.md",
+        "template": "node_modules/minami"
     }
 }
