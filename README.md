@@ -7,7 +7,6 @@ It deals with several annoying things in Backbone-based development:
 * **Enhanced templating management** for Views, _.template as default engine, template caching even if engine doesn't support it (and vice versa for debugging purposes), and marking start and end of every *rendered* template in DOM
 * **Global objects, like `application`** are no longer needed with Registry pattern implementation and DI
 * **No more annoying duplication of URLs in models and collections** — just declare `resource` member in your model
-* **Every model and collection** emits consistent events `syncStart` and `syncEnd`
 * **Redefine global syncing or for particular model or collection** is no longer problem, override `Skull.Syncer`
 * **«What is Application?»** problem solved with `Skull.Application` class
 * **«It's nor a model, nor a collection, nor a view, not a router…»** Define your own class hierarchy, based on `Skull.Abstract` and `Skull.Observable`
