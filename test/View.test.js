@@ -181,90 +181,80 @@
 
         suite('re-rendering', function () {
             var el;
-            var AbstractRerenderView = View.extend({
+            var RerenderView = View.extend({
                 tpl: 'rerenderTemplate',
+                initialize: function (options) {
+                    RerenderView.__super__.initialize.call(this, options);
+                    this.btnCounter = 0;
+                    this.elCounter = 0;
+                },
                 __ui__: {
                     btn: 'button'
                 },
                 events: {
                     'click button': 'onBtnClick',
                     'click': 'onElClick'
+                },
+                onBtnClick: function (event) {
+                    event.stopPropagation(); // or else this will trigger onElClick handler too
+                    this.btnCounter++;
+                },
+                onElClick: function () {
+                    this.elCounter++;
                 }
             });
-            var AbstractRerenderReplacingView = AbstractRerenderView.extend({
+            var RerenderReplacingView = RerenderView.extend({
                 replaceEl: true
             });
 
             setup(function () {
                 createTemplate(
                     'rerenderTemplate',
-                    '<button>click me</button>'
+                    '<div>' +
+                        '<button>ᏍᏏᏆᏱ</button>' +
+                    '</div>'
                 );
                 el = $('<div class="js-test5"></div>').appendTo(viewNest);
             });
 
             test('correctly handles re-rendering when not replacing $el', function () {
-                var btnCounter = 0;
-                var elCounter = 0;
-
-                var RerenderView = AbstractRerenderView.extend({
-                    onBtnClick: function () {
-                        btnCounter++;
-                    },
-                    onElClick: function () {
-                        elCounter++;
-                    }
-                });
-
                 var rView = new RerenderView(_.extend({}, passReg, {el: el}));
                 rView.render();
 
                 rView.ui.btn.click();
-                assert.equal(btnCounter, 1, 'button counter ok');
+                assert.equal(rView.btnCounter, 1, 'button counter ok');
 
                 rView.$el.click();
-                assert.equal(elCounter, 1, '$el counter ok');
+                assert.equal(rView.elCounter, 1, '$el counter ok');
 
                 rView.render();
                 rView.render();
 
                 rView.ui.btn.click();
-                assert.equal(btnCounter, 2, 'button counter ok after render called several times');
+                assert.equal(rView.btnCounter, 2, 'button counter ok after render called several times');
 
                 rView.$el.click();
-                assert.equal(elCounter, 2, '$el counter ok after render called several times');
+                assert.equal(rView.elCounter, 2, '$el counter ok after render called several times');
             });
 
             test('correctly handles re-rendering when replacing $el', function () {
-                var btnCounter = 0;
-                var elCounter = 0;
-
-                var RerenderReplacingView = AbstractRerenderReplacingView.extend({
-                    onBtnClick: function () {
-                        btnCounter++;
-                    },
-                    onElClick: function () {
-                        elCounter++;
-                    }
-                });
-
                 var rrView = new RerenderReplacingView(_.extend({}, passReg, {el: el}));
                 rrView.render();
 
                 rrView.ui.btn.click();
-                assert.equal(btnCounter, 1, 'button counter ok');
+                assert.equal(rrView.btnCounter, 1, 'button counter ok');
 
                 rrView.$el.click();
-                assert.equal(elCounter, 1, '$el counter ok');
+                assert.equal(rrView.elCounter, 1, '$el counter ok');
 
                 rrView.render();
                 rrView.render();
 
                 rrView.ui.btn.click();
-                assert.equal(btnCounter, 2, 'button counter ok after render called several times');
+                assert.equal(rrView.btnCounter, 2, 'button counter ok after render called several times');
 
                 rrView.$el.click();
-                assert.equal(elCounter, 2, '$el counter ok after render called several times');
+                assert.equal(rrView.elCounter, 2, '$el counter ok after render called several times');
             });
         });
     });
