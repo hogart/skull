@@ -11,7 +11,6 @@ It deals with several annoying things in Backbone-based development:
 * **Redefine global syncing or for particular model or collection** is no longer problem, override `Skull.Syncer`
 * **«What is Application?»** problem solved with `Skull.Application` class
 * **«It's nor a model, nor a collection, nor a view, not a router…»** Define your own class hierarchy, based on `Skull.Abstract` and `Skull.Observable`
-* **Easier debugging** with sensible `cid` member
 
 And many more small improvements an even more to come.
 

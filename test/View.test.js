@@ -178,5 +178,72 @@
                 assert.lengthOf(nestedView.children['$other'].$el, 1, 'Child view is attached to actual DOM element');
             });
         });
+
+        suite('re-rendering', function () {
+            var el;
+
+            setup(function () {
+                createTemplate(
+                    'rerenderTemplate',
+                    '<button>click me</button>'
+                );
+                el = $('<div class="js-test5"></div>').appendTo(viewNest);
+            });
+
+            test('correctly handles re-rendering when not replacing $el', function () {
+                var counter = 0;
+                var RerenderView = View.extend({
+                    tpl: 'rerenderTemplate',
+                    __ui__: {
+                        btn: 'button'
+                    },
+                    events: {
+                        'click button': function () {counter++; console.log('clicked')}
+                    },
+                    onClickBtn: function () {
+                        counter++;
+                    }
+                });
+
+                var eventsView = new RerenderView(_.extend({}, passReg, {el: el}));
+                eventsView.render();
+
+                eventsView.ui.btn.click();
+                assert.equal(counter, 1, 'counter ok');
+
+                eventsView.render();
+                eventsView.render();
+
+                eventsView.ui.btn.click();
+                assert.equal(counter, 2, 'counter ok after render called several times');
+            });
+
+            test('correctly handles re-rendering when replacing $el', function () {
+                var counter = 0;
+                var RerenderView = View.extend({
+                    tpl: 'rerenderTemplate',
+                    replaceEl: true,
+                    events: {
+                        'click': 'onClickBtn'
+                    },
+                    onClickBtn: function () {
+                        counter++;
+                    }
+                });
+
+                var eventsView = new RerenderView(_.extend({}, passReg, {el: el}));
+                eventsView.render();
+
+                eventsView.$el.click();
+                assert.equal(counter, 1, 'counter ok');
+
+                eventsView.render();
+                eventsView.render();
+
+                eventsView.$el.click();
+
+                assert.equal(counter, 2, 'counter ok after render called several times');
+            });
+        });
     });
 })(mocha, chai.assert, Skull);

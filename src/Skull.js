@@ -698,13 +698,6 @@
                 Skull.ResourceRegistry.processRegistry(this);
 
                 Model.__super__.constructor.call(this, attributes, options);
-
-                // more readable cid
-                if (this.resource) { // REST model
-                    this.cid = _.uniqueId('model.' + this.resource);
-                } else {
-                    this.cid = _.uniqueId('model');
-                }
             },
 
             /**
@@ -769,7 +762,6 @@
     /**
      * Skull.Model is basic model with few enhancements:
      * * registry handling
-     * * meaningful cid
      * * easier REST urls generation (when `resource` field provided)
      * @class Skull.Model
      * @extends Backbone.Model
@@ -821,13 +813,6 @@
                 Skull.ResourceRegistry.processRegistry(this);
 
                 Collection.__super__.constructor.call(this, models, options);
-
-                // more readable cid
-                if (this.resource) { // REST collection
-                    this.cid = _.uniqueId('collection.' + this.resource);
-                } else {
-                    this.cid = _.uniqueId('collection');
-                }
             },
 
             /**
@@ -882,7 +867,6 @@
     /**
      * Skull.Collection is a collection with few enhancements:
      * * registry handling
-     * * meaningful cid
      * * easier REST urls generation
      * @class Skull.Collection
      * @extends Backbone.Collection
@@ -966,9 +950,6 @@
                 Skull.ResourceRegistry.processRegistry(this);
 
                 View.__super__.constructor.call(this, options);
-
-                // more readable cid
-                this.cid = _.uniqueId('view');
             },
 
             initialize: function (options) {
