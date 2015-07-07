@@ -16,7 +16,7 @@
   "license": "MIT",
   "devDependencies": {
     "chai": "^2.1.1",
-    "eslint": "^0.18.x",
+    "eslint": "^0.24.x",
     "jquery-mockjax": "^1.6.1",
     "jscs": "^1.12.x",
     "jsdoc": "^3.3.0-beta3",

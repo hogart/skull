@@ -166,7 +166,7 @@
                 var OtherView = View.extend({});
                 var NestedMacroView = BasicMacroView.extend({
                     __children__: {
-                        '$other': OtherView
+                        $other: OtherView
                     }
                 });
 
@@ -175,7 +175,7 @@
                 nestedView.render();
 
                 assert.property(nestedView.children, '$other', 'Child view was created and assigned according to unfolded selector');
-                assert.lengthOf(nestedView.children['$other'].$el, 1, 'Child view is attached to actual DOM element');
+                assert.lengthOf(nestedView.children.$other.$el, 1, 'Child view is attached to actual DOM element');
             });
         });
 
@@ -198,7 +198,7 @@
                         btn: 'button'
                     },
                     events: {
-                        'click button': function () {counter++; console.log('clicked')}
+                        'click button': 'onClickBtn'
                     },
                     onClickBtn: function () {
                         counter++;
