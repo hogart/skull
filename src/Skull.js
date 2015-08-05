@@ -449,7 +449,6 @@
                 if (success) {
                     success(resp, status, xhr);
                 }
-                model.trigger('sync', model, resp, options);
             };
 
             var error = options.error;

@@ -1,6 +1,6 @@
 {
   "name": "backbone-skull",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "main": "src/Skull.js",
   "description": "Skull sits on top of Backbone and protects your application's brains.",
   "keywords": [
