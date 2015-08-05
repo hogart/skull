@@ -1341,6 +1341,22 @@
         },
 
         /**
+         * Creates new instance of `constructor` passing registry in `options`, puts it to registry and returns it.
+         * @param {String} name
+         * @param {Function} constructor
+         * @param {Object|Array} data object for models, array for collections
+         * @param {Object} options
+         * @returns {Object}
+         */
+        instantiate: function (name, constructor, data, options) {
+            if (!options) {
+                options = {};
+            }
+            options.registry = this.registry;
+            return this.registry.register(name, new constructor(data, options));
+        },
+
+        /**
          * Renders root view and starts up Backbone.history.
          * Call this when your app is ready (or pass `options.autostart` to {@link Skull.Application#initialize}).
          * Feel free to override.
